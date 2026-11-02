@@ -1,0 +1,8 @@
+# Configuration Netlify.
+# Le scan de secrets échouait le build sur des variables publiques par design :
+# les NEXT_PUBLIC_* sont destinées au bundle client (la RLS protège les données),
+# les PROVIDER valent « mock » et NEXT_PUBLIC_SITE_URL est une simple URL.
+# OMIT_KEYS les exclut du scan ; les vrais secrets (SERVICE_ROLE_KEY,
+# DATABASE_URL) restent surveillés.
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "EMAIL_PROVIDER,PAYMENT_PROVIDER,WHATSAPP_PROVIDER,NEXT_PUBLIC_SITE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_WHATSAPP_NUMBER"
