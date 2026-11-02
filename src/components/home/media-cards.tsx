@@ -22,7 +22,11 @@ export const MEDIA_CARDS: MediaCardDef[] = [
  */
 export function MediaCards() {
   return (
-    <ul aria-label="Aperçus : photos, vidéo, événements" className="flex flex-col gap-5 sm:grid sm:grid-cols-3">
+    <ul
+      aria-label="Aperçus : photos, vidéo, événements"
+      data-lenis-prevent
+      className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-5 sm:overflow-visible sm:p-0"
+    >
       {MEDIA_CARDS.map((card) => (
         <MediaCard key={card.id} card={card} />
       ))}

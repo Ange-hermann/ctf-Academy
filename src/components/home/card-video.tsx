@@ -1,23 +1,40 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef } from "react";
+import { usePerf } from "@/hooks/use-perf";
 
 /**
- * Vidéo décorative d'un cadre : lecture automatique muette en boucle.
- * Le play() est relancé au montage pour couvrir les cas où l'attribut
- * `autoplay` seul ne démarre pas (navigation SPA, onglet masqué, etc.).
+ * Vidéo décorative d'un cadre : lecture automatique muette en boucle, mais
+ * uniquement tant qu'elle est visible à l'écran (IntersectionObserver) et en
+ * préchargeant seulement les métadonnées. Mode allégé, mouvement réduit ou
+ * appareil modeste : le poster seul est rendu, la vidéo n'est jamais chargée.
  */
 export function CardVideo({ src, poster, className }: { src: string; poster?: string; className?: string }) {
+  const { ready, tier, reducedMotion } = usePerf();
   const ref = useRef<HTMLVideoElement>(null);
+  const animate = ready && tier === "full" && !reducedMotion;
 
   useEffect(() => {
+    if (!animate) return;
     const v = ref.current;
     if (!v) return;
-    const tryPlay = () => void v.play().catch(() => undefined);
-    tryPlay();
-    v.addEventListener("canplay", tryPlay);
-    return () => v.removeEventListener("canplay", tryPlay);
-  }, [src]);
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) void v.play().catch(() => undefined);
+        else v.pause();
+      },
+      { threshold: 0.2 },
+    );
+    io.observe(v);
+    return () => io.disconnect();
+  }, [animate, src]);
+
+  if (!animate) {
+    return poster ? (
+      <Image src={poster} alt="" fill sizes="(max-width: 640px) 76vw, 33vw" className="object-cover" />
+    ) : null;
+  }
 
   return (
     <video
@@ -25,11 +42,10 @@ export function CardVideo({ src, poster, className }: { src: string; poster?: st
       src={src}
       poster={poster}
       aria-hidden
-      autoPlay
       muted
       loop
       playsInline
-      preload="auto"
+      preload="metadata"
       disablePictureInPicture
       className={className}
     />

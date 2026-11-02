@@ -24,7 +24,7 @@ export function MediaCard({ card }: { card: MediaCardDef }) {
   };
 
   return (
-    <li className="relative h-36 overflow-hidden rounded-[14px] border border-or/25 sm:h-40">
+    <li className="relative h-40 w-[76vw] max-w-80 shrink-0 snap-start overflow-hidden rounded-[14px] border border-or/25 sm:h-40 sm:w-auto sm:max-w-none sm:snap-align-none">
       {card.alternateVideo ? (
         <CardSwitcher image={card.image} video={card.alternateVideo} alt={card.label} onPhaseChange={setVideoPhase} />
       ) : card.video ? (
@@ -44,7 +44,7 @@ export function MediaCard({ card }: { card: MediaCardDef }) {
         onClick={enlarge}
         className="group absolute inset-0 z-10 cursor-zoom-in"
       >
-        <span className="absolute right-2 top-2 grid size-8 place-items-center rounded-lg border border-or/50 bg-noir/70 text-or-light opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+        <span className="absolute right-2 top-2 grid size-8 place-items-center rounded-lg border border-or/50 bg-noir/70 text-or-light opacity-100 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 sm:opacity-0">
           <Maximize2 aria-hidden className="size-3.5" />
         </span>
       </button>

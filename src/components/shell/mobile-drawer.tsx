@@ -80,7 +80,7 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
               </button>
             </div>
 
-            <div data-lenis-prevent className="min-h-0 flex-1 overflow-y-auto">
+            <div data-lenis-prevent className="min-h-0 flex-1 overscroll-contain overflow-y-auto">
               {/* Entrées de la barre latérale (ministères sur CTF CHURCH) */}
               <nav aria-label="Navigation rapide">
                 <ul className="divide-y divide-line/50">

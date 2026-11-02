@@ -13,7 +13,11 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
       >
         Aller au contenu
       </a>
-      <ShellFrame sidebar={<SidebarNav />} topbar={<TopBar />}>
+      <ShellFrame
+        sidebar={<SidebarNav />}
+        topbar={<TopBar />}
+        contentClassName="pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0"
+      >
         {children}
       </ShellFrame>
       <MobileCta />
