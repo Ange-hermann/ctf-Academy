@@ -1,0 +1,40 @@
+Projet : CTF ACADEMY, site public (Next.js App Router, TypeScript strict, Tailwind, R3F, Framer Motion, Supabase).
+- Langue de l'interface : français. Code et identifiants en anglais.
+- Charte : fond #0A0A0A, noir-soft #141414, noir-card #1A1A1A, or #C9A227, or-light #E5C158, or-dark #8B6F1A, blanc #FAFAF9. N'utilise aucune autre couleur d'accent, sauf les couleurs de la Vision dans les sections Vision uniquement.
+- Utilise toujours les tokens Tailwind, jamais de couleurs en dur dans les composants.
+- Mobile first. Toute scène 3D est chargée en dynamic import, a un mode allégé et respecte prefers-reduced-motion.
+- Ne jamais inventer de tarifs, dates ou noms : valeurs d'exemple marquées // TODO.
+- Aucune clé secrète côté client. Valide les formulaires avec Zod côté client et serveur.
+- Paiement, e-mail et WhatsApp passent par des interfaces d'abstraction (mock par défaut).
+- Pas de any, pas de console.log, pas de lien mort, pas de lorem ipsum.
+- Après chaque étape : lint, build, et vérification visuelle mobile 375 px et desktop 1440 px.
+
+Conventions techniques du dépôt :
+- Windows / PowerShell : utiliser npm.cmd / npx.cmd. Installer avec --before=<J-7>.
+- Next.js 16 : `proxy.ts` (et non middleware), params/searchParams/cookies asynchrones. Lire node_modules/next/dist/docs avant d'utiliser une API.
+- Tokens dans src/app/globals.css (@theme). Couleurs de la Vision : variables CSS --color-vision-* / --color-objectif-*, appliquées via les utilitaires `tint-*` (variable --tint).
+- Contenus éditables : src/content/*. Textes à valider marqués `// TODO: texte officiel`.
+
+Espace étudiant :
+- Routes sous /espace-etudiant. Après connexion, toujours rediriger vers le tableau de bord.
+- Menu et contenus adaptés à la formation de l'étudiant (EDS, EDM, Diacres) ; routes spécifiques protégées par middleware (proxy.ts) ET RLS.
+- Accès complet uniquement si statut_admission = admis ; sinon page « Suivre ma candidature » seule.
+- Les trois statuts (inscription, paiement, admission) restent indépendants.
+- Données de démonstration toujours marquées « Exemple ». Ne jamais inventer de notes, montants ou dates réels.
+- Animations : seulement transform et opacity, un seul moment fort par écran, jamais dans le lecteur de cours. Toute scène 3D a une version 2D de secours et respecte prefers-reduced-motion et le mode allégé.
+- Fichiers sensibles dans un bucket privé avec URL signées. RLS sur toutes les tables, tests RLS obligatoires.
+- Réutiliser les composants et tokens existants. Pas de any, pas de console.log, pas de alert/confirm, pas de lien mort.
+- Après chaque étape : lint, build, vérification mobile 375 px et desktop 1440 px.
+
+Refonte design (maquette noir & or) :
+- Toute la plateforme utilise ShellFrame (barre latérale gauche fixe + barre supérieure) décliné en PublicShell, StudentShell, AdminShell.
+- La navigation est définie une seule fois dans src/content/navigation.ts. Ne jamais dupliquer les menus dans les composants.
+- Libellés de la barre supérieure : Découvrir CTF, Formation, Admission, Mon compte, S'inscrire. Barre latérale publique : Accueil, École des STAFs, École des Mentors, École des Diacres, École de pastorale, La vision de CTF, Objectif de l'église.
+- Charte : tokens existants + border-gold-strong, glow-gold-*, gradient-gold-metal, gradient-media-fade, gradient-stage-edge. Aucune couleur en dur dans les composants.
+- Polices : Montserrat (titres), Barlow Semi Condensed (navigation), Inter (texte), Cinzel (moments solennels uniquement).
+- Animations : seulement transform et opacity, un seul moment fort par écran, jamais dans le lecteur de cours ni dans l'administration (hors cadre). Respect de prefers-reduced-motion et du mode allégé.
+- Aucune scène WebGL au-dessus de la ligne de flottaison. L'image de scène de l'accueil est prioritaire (LCP).
+- Médias : iframes vidéo chargées au clic uniquement. Images en next/image avec dimensions réservées.
+- Formation « pastorale » : contenus et fonctions spécifiques en // TODO, ne rien inventer.
+- Données d'exemple toujours marquées « Exemple ». Pas de any, pas de console.log, pas de lien mort, pas de alert/confirm.
+- Après chaque étape : lint, build, comparaison visuelle à la maquette (1672 x 941) puis mobile 390 px.

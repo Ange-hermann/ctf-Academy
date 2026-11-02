@@ -1,0 +1,516 @@
+@import "tailwindcss";
+
+@theme {
+  /* Charte CTF — noir & or */
+  --color-noir: #0a0a0a;
+  --color-noir-soft: #141414;
+  --color-noir-card: #1a1a1a;
+  --color-or: #c9a227;
+  --color-or-light: #e5c158;
+  --color-or-dark: #8b6f1a;
+  --color-blanc: #fafaf9;
+  --color-blanc-pur: #ffffff;
+  --color-line: rgb(201 162 39 / 0.15);
+
+  /* Statuts (discrets) */
+  --color-success: #4cb872;
+  --color-danger: #e5484d;
+  --color-warning: #e5a03a;
+  --color-success-light: #8fdcaa;
+  --color-danger-light: #f5a3a5;
+  --color-warning-light: #f3c98a;
+
+  /* Couleurs de la Vision — réservées aux sections Vision */
+  --color-vision-adoration: #f2c230;
+  --color-vision-transformation: #ef7d2d;
+  --color-vision-guerison: #a93bb0;
+  --color-vision-famille: #2bb3c0;
+  --color-vision-excellence: #7bc043;
+  --color-objectif-1: #f2c230;
+  --color-objectif-2: #e83e8c;
+  --color-objectif-3: #a93bb0;
+  --color-objectif-4: #3f6fe0;
+  --color-objectif-5: #4ccb6c;
+  /* Variantes « texte » : contraste ≥ 4.5:1 sur #0A0A0A */
+  --color-vision-guerison-text: #cf7ad6;
+  --color-objectif-3-text: #cf7ad6;
+  --color-objectif-4-text: #7a9cf0;
+
+  --shadow-gold: 0 0 20px rgb(201 162 39 / 0.15);
+  --shadow-gold-lg: 0 0 40px rgb(201 162 39 / 0.25);
+  --shadow-glow-sm: 0 0 14px rgb(229 193 88 / 0.35);
+  --shadow-glow-md: 0 0 28px rgb(229 193 88 / 0.45);
+  --shadow-glow-lg: 0 0 60px rgb(201 162 39 / 0.35);
+
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+
+  /* Dimensions du nouveau cadre (maquette 1672 × 941) */
+  --spacing-sidebar: 17.5rem;
+  --spacing-sidebar-rail: 5.25rem;
+  --spacing-topbar: 6rem;
+  --spacing-topbar-mobile: 4rem;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-shine: shine 1.1s var(--ease-out-expo);
+  --animate-reveal: reveal 1.4s var(--ease-out-expo) both;
+  --animate-halo: halo 2.6s ease-in-out infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-spin-slow: spin 18s linear infinite;
+  --animate-letter: letter 0.9s var(--ease-out-expo) both;
+  --animate-rise: rise 1.1s var(--ease-out-expo) both;
+  --animate-fade-up: fade-up 0.9s var(--ease-out-expo) both;
+  --animate-fade-in: fade-in 1s ease-out both;
+  --animate-shimmer: shimmer 4s ease-in-out infinite;
+  --animate-twinkle: twinkle 2.4s ease-in-out infinite;
+  --animate-rays: rays 2.8s ease-out infinite;
+  --animate-wave: wave 3s ease-out infinite;
+  --animate-morph: morph 6s ease-in-out infinite;
+  --animate-orbit: orbit 24s linear infinite;
+  --animate-pulse-core: pulse-core 3.2s ease-in-out infinite;
+  --animate-spark: spark 1.2s var(--ease-out-expo) both;
+  --animate-coin-turn: coin-turn 9s var(--ease-out-expo) infinite;
+  --animate-line-shine: line-shine 7s ease-in-out infinite;
+  --animate-ring-pulse: ring-pulse 3s ease-in-out infinite;
+  --animate-ken-burns: ken-burns 8.5s ease-out forwards;
+  --animate-arc-flow: arc-flow 8s linear infinite;
+
+  @keyframes shine {
+    from { transform: translateX(-120%) skewX(-20deg); }
+    to { transform: translateX(320%) skewX(-20deg); }
+  }
+  @keyframes reveal {
+    from { opacity: 0; transform: scale(0.85); filter: blur(8px) brightness(1.8); }
+    to { opacity: 1; transform: scale(1); filter: blur(0) brightness(1); }
+  }
+  @keyframes halo {
+    0%, 100% { box-shadow: 0 0 20px rgb(201 162 39 / 0.18), 0 0 0 0 rgb(201 162 39 / 0.35); }
+    50% { box-shadow: 0 0 40px rgb(201 162 39 / 0.3), 0 0 0 12px rgb(201 162 39 / 0); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  @keyframes letter {
+    from { opacity: 0; transform: translateY(0.4em); filter: blur(10px); }
+    to { opacity: 1; transform: none; filter: blur(0); }
+  }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(28px) scale(0.96); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  @keyframes twinkle {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.85; }
+    50% { transform: scale(1.18) rotate(18deg); opacity: 1; }
+  }
+  @keyframes rays {
+    from { transform: translateY(40%) scaleY(0.3); opacity: 0; }
+    30% { opacity: 1; }
+    to { transform: translateY(-60%) scaleY(1); opacity: 0; }
+  }
+  @keyframes wave {
+    from { transform: scale(0.4); opacity: 0.9; }
+    to { transform: scale(1.6); opacity: 0; }
+  }
+  @keyframes morph {
+    0%, 100% { border-radius: 50%; transform: rotate(0deg); }
+    33% { border-radius: 18%; transform: rotate(60deg); }
+    66% { border-radius: 50% 10% 50% 10%; transform: rotate(120deg); }
+  }
+  @keyframes orbit {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes pulse-core {
+    0%, 100% { transform: scale(1); opacity: 0.85; }
+    50% { transform: scale(1.08); opacity: 1; }
+  }
+  @keyframes spark {
+    0% { opacity: 0; transform: scale(0); }
+    40% { opacity: 1; transform: scale(1.4); }
+    100% { opacity: 0; transform: scale(3); }
+  }
+  @keyframes coin-turn {
+    0%, 72% { transform: rotateY(0deg); }
+    86%, 94% { transform: rotateY(180deg); }
+    100% { transform: rotateY(360deg); }
+  }
+  @keyframes line-shine {
+    0% { transform: translateX(-110%); }
+    55%, 100% { transform: translateX(220%); }
+  }
+  @keyframes ring-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgb(229 193 88 / 0); }
+    50% { box-shadow: 0 0 24px 5px rgb(229 193 88 / 0.3); }
+  }
+  @keyframes ken-burns {
+    from { transform: scale(1); }
+    to { transform: scale(1.08); }
+  }
+  @keyframes arc-flow {
+    to { stroke-dashoffset: -640; }
+  }
+  @keyframes splash {
+    0%, 70% { opacity: 1; visibility: visible; }
+    100% { opacity: 0; visibility: hidden; }
+  }
+  @keyframes sweep {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(100%); }
+  }
+  @keyframes circles-left {
+    0%, 100% { transform: translateX(-35%); }
+    50% { transform: translateX(-8%); }
+  }
+  @keyframes circles-right {
+    0%, 100% { transform: translateX(35%); }
+    50% { transform: translateX(8%); }
+  }
+}
+
+@theme inline {
+  /* Une seule police partout : Helvetica uniquement (aucun téléchargement) */
+  --font-sans: "Helvetica Neue", Helvetica, ui-sans-serif, sans-serif;
+  --font-display: "Helvetica Neue", Helvetica, ui-sans-serif, sans-serif;
+  --font-nav: "Helvetica Neue", Helvetica, ui-sans-serif, sans-serif;
+  --font-solemn: "Helvetica Neue", Helvetica, ui-sans-serif, sans-serif;
+}
+
+/* ───────── Dégradés de la charte ───────── */
+@utility bg-gradient-noir {
+  background-image: linear-gradient(135deg, var(--color-noir) 0%, var(--color-noir-soft) 100%);
+}
+@utility bg-gradient-card {
+  background-image: linear-gradient(145deg, var(--color-noir-soft) 0%, var(--color-noir) 100%);
+}
+@utility bg-gradient-or {
+  background-image: linear-gradient(135deg, var(--color-or) 0%, var(--color-or-light) 50%, var(--color-or-dark) 100%);
+}
+@utility text-gradient-or {
+  background-image: linear-gradient(
+    110deg,
+    var(--color-or-light) 0%,
+    var(--color-or) 35%,
+    var(--color-blanc) 50%,
+    var(--color-or) 65%,
+    var(--color-or-dark) 100%
+  );
+  background-size: 250% 100%;
+  background-position: 0% 50%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+@utility text-gradient-or-soft {
+  background-image: linear-gradient(
+    110deg,
+    color-mix(in oklab, var(--color-or-light) 62%, var(--color-blanc)) 0%,
+    color-mix(in oklab, var(--color-or) 72%, var(--color-blanc)) 38%,
+    var(--color-blanc) 52%,
+    color-mix(in oklab, var(--color-or) 72%, var(--color-blanc)) 66%,
+    color-mix(in oklab, var(--color-or-dark) 78%, var(--color-blanc)) 100%
+  );
+  background-size: 250% 100%;
+  background-position: 0% 50%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+@utility tracking-display {
+  letter-spacing: 0.18em;
+}
+
+/* ───────── Tokens de la refonte (maquette noire & or) ───────── */
+@utility border-gold-strong {
+  border: 1.5px solid var(--color-or);
+}
+@utility border-gold-soft {
+  border: 1px solid rgb(201 162 39 / 0.15);
+}
+@utility glow-gold-sm {
+  box-shadow: var(--shadow-glow-sm);
+}
+@utility glow-gold-md {
+  box-shadow: var(--shadow-glow-md);
+}
+@utility glow-gold-lg {
+  box-shadow: var(--shadow-glow-lg);
+}
+@utility bg-gradient-gold-metal {
+  background-image: linear-gradient(180deg, #f3d982 0%, var(--color-or-light) 35%, var(--color-or) 60%, var(--color-or-dark) 100%);
+}
+@utility text-gradient-gold-metal {
+  background-image: linear-gradient(180deg, #f3d982 0%, var(--color-or-light) 35%, var(--color-or) 60%, var(--color-or-dark) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+@utility bg-gradient-media-fade {
+  background-image: linear-gradient(90deg, rgb(10 10 10 / 0.92) 0%, rgb(10 10 10 / 0.55) 45%, rgb(10 10 10 / 0) 100%);
+}
+@utility bg-gradient-stage-edge {
+  background-image: linear-gradient(270deg, var(--color-noir) 0%, rgb(10 10 10 / 0.85) 18%, rgb(10 10 10 / 0) 40%);
+}
+@utility gold-metal-shadow {
+  filter: drop-shadow(0 3px 14px rgb(201 162 39 / 0.3));
+}
+@utility bg-aura {
+  background-image:
+    radial-gradient(60% 50% at 50% 0%, rgb(201 162 39 / 0.12) 0%, transparent 70%),
+    linear-gradient(135deg, var(--color-noir) 0%, var(--color-noir-soft) 100%);
+}
+@utility glass {
+  background-color: rgb(20 20 20 / 0.62);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+/* ───────── Teintes de la Vision (variable --tint, --tint-text) ───────── */
+@utility tint-text {
+  color: var(--tint-text, var(--tint));
+}
+@utility tint-bg {
+  background-color: var(--tint);
+}
+@utility tint-border {
+  border-color: color-mix(in oklab, var(--tint) 40%, transparent);
+}
+@utility tint-border-strong {
+  border-color: color-mix(in oklab, var(--tint) 80%, transparent);
+}
+@utility tint-glow {
+  box-shadow: 0 0 26px color-mix(in oklab, var(--tint) 26%, transparent);
+}
+@utility tint-glow-lg {
+  box-shadow: 0 0 48px color-mix(in oklab, var(--tint) 42%, transparent);
+}
+@utility tint-dot {
+  background-color: var(--tint);
+  box-shadow: 0 0 10px var(--tint);
+}
+@utility tint-text-glow {
+  text-shadow: 0 0 22px color-mix(in oklab, var(--tint) 60%, transparent);
+}
+@utility tint-soft {
+  background-color: color-mix(in oklab, var(--tint) 12%, transparent);
+}
+
+/* Grain très léger pour la matière des surfaces premium */
+@utility grain {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+/* Scintillement doré discret (pages compte) */
+@utility sparkle-bg {
+  background-image:
+    radial-gradient(1px 1px at 12% 22%, rgb(229 193 88 / 0.7), transparent 60%),
+    radial-gradient(1px 1px at 72% 12%, rgb(229 193 88 / 0.6), transparent 60%),
+    radial-gradient(1.5px 1.5px at 85% 64%, rgb(229 193 88 / 0.5), transparent 60%),
+    radial-gradient(1px 1px at 30% 80%, rgb(229 193 88 / 0.6), transparent 60%),
+    radial-gradient(1px 1px at 52% 46%, rgb(229 193 88 / 0.4), transparent 60%),
+    radial-gradient(60% 50% at 50% 0%, rgb(201 162 39 / 0.1) 0%, transparent 70%);
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+    /* Aucun glissement horizontal : la page ne bouge jamais de gauche à droite */
+    overflow-x: clip;
+    overscroll-behavior-x: none;
+  }
+  body {
+    @apply bg-noir font-sans text-blanc antialiased;
+    font-size: 1rem;
+    line-height: 1.6;
+    overflow-x: clip;
+  }
+  h1, h2, h3, h4 {
+    @apply font-display;
+    text-wrap: balance;
+  }
+  ::selection {
+    background: rgb(201 162 39 / 0.35);
+    color: var(--color-blanc);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-or);
+    outline-offset: 3px;
+  }
+  * {
+    scrollbar-color: var(--color-or-dark) var(--color-noir);
+  }
+  /* Lenis */
+  html.lenis, html.lenis body { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  .lenis.lenis-stopped { overflow: hidden; }
+}
+
+/* Écran de chargement : pur CSS, disparaît seul (aucune dépendance au JavaScript) */
+.splash {
+  animation: splash 1.1s ease-out 0.2s forwards;
+}
+.splash-sweep {
+  animation: sweep 0.9s var(--ease-out-expo) 0.15s both;
+}
+
+/* Transition de page */
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+.page-enter {
+  animation: page-enter 0.55s var(--ease-out-expo) both;
+}
+.page-sweep {
+  animation: sweep 0.9s var(--ease-out-expo) both;
+  transform: translateX(-100%);
+}
+
+/* ───────── Espace étudiant ───────── */
+/* Squelette doré : reflet doux (transform uniquement) */
+.skeleton-gold {
+  position: relative;
+  overflow: hidden;
+  background-color: rgb(201 162 39 / 0.07);
+  border: 1px solid rgb(201 162 39 / 0.1);
+}
+.skeleton-gold::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgb(229 193 88 / 0.12), transparent);
+  animation: sweep 1.6s ease-in-out infinite;
+}
+/* Transition de page : fondu + léger glissement en profondeur */
+@keyframes student-page {
+  from { opacity: 0; transform: translate3d(0, 6px, 0) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+.student-page {
+  animation: student-page 0.4s var(--ease-out-expo) both;
+}
+/* Entrées en cascade (60 ms d'écart, via --i) */
+@keyframes cascade-in {
+  from { opacity: 0; transform: translate3d(0, 14px, 0); }
+  to { opacity: 1; transform: none; }
+}
+.cascade {
+  animation: cascade-in 0.6s var(--ease-out-expo) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+/* Éclat doré qui traverse une seule fois le prénom */
+@keyframes name-shine {
+  from { background-position: 0% 50%; }
+  to { background-position: 100% 50%; }
+}
+.name-shine {
+  animation: name-shine 1.8s var(--ease-out-expo) 0.9s both;
+}
+html[data-perf="lite"] .skeleton-gold::after {
+  animation: none;
+}
+
+/* Mode allégé : moins d'effets coûteux */
+html[data-perf="lite"] .glass {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background-color: rgb(20 20 20 / 0.96);
+}
+html[data-perf="lite"] .lite-hide {
+  display: none !important;
+}
+html[data-perf="lite"] .splash {
+  animation-duration: 0.5s;
+  animation-delay: 0s;
+}
+
+/* ───────── Thème clair ───────── */
+/* Mêmes tokens, surfaces inversées : les utilitaires basculent via les variables. */
+html[data-theme="light"] {
+  color-scheme: light;
+  --color-noir: #f5f4ef;
+  --color-noir-soft: #fbfaf6;
+  --color-noir-card: #ffffff;
+  --color-or: #8f7214;
+  --color-or-light: #a5841c;
+  --color-or-dark: #6b5410;
+  --color-blanc: #1c1a14;
+  --color-line: rgb(143 114 20 / 0.24);
+
+  --color-success: #2e8f57;
+  --color-danger: #c83236;
+  --color-warning: #a9740f;
+  --color-success-light: #2e8f57;
+  --color-danger-light: #c83236;
+  --color-warning-light: #a9740f;
+
+  /* Variantes « texte » de la Vision : contraste ≥ 4.5:1 sur fond clair */
+  --color-vision-guerison-text: #a93bb0;
+  --color-objectif-3-text: #a93bb0;
+  --color-objectif-4-text: #3f6fe0;
+}
+/* Surfaces et dégradés qui codent le noir en dur */
+html[data-theme="light"] .glass {
+  background-color: rgb(255 255 255 / 0.65);
+}
+html[data-theme="light"][data-perf="lite"] .glass {
+  background-color: rgb(255 255 255 / 0.94);
+}
+html[data-theme="light"] .text-gradient-gold-metal {
+  background-image: linear-gradient(
+    180deg,
+    var(--color-or-light) 0%,
+    var(--color-or) 45%,
+    var(--color-or-dark) 100%
+  );
+}
+html[data-theme="light"] .bg-gradient-stage-edge {
+  background-image: linear-gradient(
+    270deg,
+    var(--color-noir) 0%,
+    color-mix(in srgb, var(--color-noir) 85%, transparent) 18%,
+    transparent 40%
+  );
+}
+html[data-theme="light"] .skeleton-gold {
+  background-color: rgb(143 114 20 / 0.08);
+  border-color: rgb(143 114 20 / 0.14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
