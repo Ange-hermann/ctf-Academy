@@ -22,15 +22,15 @@ export function StageFrame({ c }: { c: StageContent }) {
     <section aria-label={c.ariaLabel} className="mt-5">
       <div className="relative touch-pan-y overflow-hidden rounded-2xl border-gold-strong bg-noir-soft shadow-[0_24px_60px_-24px_rgb(0_0_0/0.8),0_0_40px_rgb(201_162_39/0.1)] lg:grid lg:grid-cols-[minmax(0,3fr)_minmax(0,7fr)]">
         {/* ——— Encadré intérieur : portrait centré dans son sous-cadre ——— */}
-        <div className="relative grid aspect-[16/10] place-items-center bg-noir p-4 sm:aspect-[16/8] sm:p-5 lg:aspect-auto lg:min-h-[320px]">
-          <span className="relative block h-full max-h-[460px] aspect-[2/3] overflow-hidden rounded-lg border border-or/60 shadow-gold-sm">
+        <div className="relative grid aspect-[4/3] place-items-center bg-noir p-3 sm:aspect-[16/8] sm:p-5 lg:aspect-auto lg:min-h-[320px]">
+          <span className="relative block h-full w-full overflow-hidden rounded-lg border border-or/60 shadow-gold-sm lg:aspect-[2/3] lg:max-h-[460px] lg:w-auto">
             <Image
               src={c.image}
               alt={c.imageAlt}
               fill
               priority
-              sizes="(max-width: 1024px) 50vw, 300px"
-              className="object-cover"
+              sizes="(max-width: 1024px) 92vw, 300px"
+              className="object-cover object-[50%_15%] lg:object-center"
             />
           </span>
         </div>

@@ -1,4 +1,3 @@
-import { MobileCta } from "@/components/shell/mobile-cta";
 import { ShellFrame } from "@/components/shell/shell-frame";
 import { SidebarNav } from "@/components/shell/sidebar-nav";
 import { TopBar } from "@/components/shell/topbar";
@@ -13,14 +12,9 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
       >
         Aller au contenu
       </a>
-      <ShellFrame
-        sidebar={<SidebarNav />}
-        topbar={<TopBar />}
-        contentClassName="pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0"
-      >
+      <ShellFrame sidebar={<SidebarNav />} topbar={<TopBar />}>
         {children}
       </ShellFrame>
-      <MobileCta />
     </>
   );
 }

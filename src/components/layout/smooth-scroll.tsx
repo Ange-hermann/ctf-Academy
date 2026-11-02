@@ -10,6 +10,9 @@ export function SmoothScroll() {
 
   useEffect(() => {
     if (!ready || tier === "lite" || reducedMotion) return;
+    // Écrans tactiles : le défilement natif est déjà inertiel — Lenis ne doit
+    // pas capter le touch (risque de blocage, surtout dans les webviews).
+    if (window.matchMedia("(pointer: coarse)").matches) return;
     const lenis = new Lenis({ lerp: 0.11, wheelMultiplier: 1, anchors: true });
     let frame = requestAnimationFrame(function raf(time) {
       lenis.raf(time);

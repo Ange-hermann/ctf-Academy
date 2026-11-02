@@ -188,7 +188,7 @@ export function TopBar() {
             >
               <Search aria-hidden className="size-[22px]" />
             </button>
-            <ThemeToggle iconClassName="size-[22px]" />
+            <ThemeToggle iconClassName="size-[22px]" className="hidden lg:grid" />
             <Divider className="hidden self-center lg:block" />
             <button
               type="button"
