@@ -13,6 +13,7 @@ import { adminRoutes, type AdminNavItem } from "@/config/admin-nav";
 import type { StaffNotification } from "@/lib/admin/queries";
 import { routes } from "@/config/navigation";
 import { signOutAction } from "@/lib/auth/actions";
+import { useScrollLock } from "@/hooks/use-scroll-lock";
 import { cn } from "@/lib/utils";
 
 export type AdminShellUser = { id: string; name: string; email: string; roleLabels: string[] };
@@ -51,6 +52,7 @@ export function AdminShell({
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [drawer, setDrawer] = useState(false);
+  useScrollLock(drawer);
 
   return (
     <div className="min-h-dvh bg-noir">

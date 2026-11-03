@@ -7,6 +7,7 @@ import { ArrowRight, X } from "lucide-react";
 import { BrandMedallion } from "@/components/shell/brand-medallion";
 import { Button } from "@/components/ui/button";
 import { mainNav, mediaNav, routes } from "@/content/navigation";
+import { useScrollLock } from "@/hooks/use-scroll-lock";
 import { useSignedIn } from "@/hooks/use-signed-in";
 
 const columns = [...mainNav, { label: "Médiathèque", href: routes.photos, description: "", icon: mainNav[0].icon, children: mediaNav }];
@@ -21,11 +22,10 @@ export function FullMenu({ open, onClose }: { open: boolean; onClose: () => void
   const panelRef = useRef<HTMLDivElement>(null);
   const signedIn = useSignedIn();
 
+  useScrollLock(open);
+
   useEffect(() => {
     if (!open) return;
-    const root = document.documentElement;
-    const prev = root.style.overflow;
-    root.style.overflow = "hidden";
     const prevFocus = document.activeElement as HTMLElement | null;
     closeRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
@@ -46,7 +46,6 @@ export function FullMenu({ open, onClose }: { open: boolean; onClose: () => void
     };
     window.addEventListener("keydown", onKey);
     return () => {
-      root.style.overflow = prev;
       window.removeEventListener("keydown", onKey);
       prevFocus?.focus?.();
     };

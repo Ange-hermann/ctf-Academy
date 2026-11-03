@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ChevronLeft, ChevronRight, Download, X } from "lucide-react";
+import { useScrollLock } from "@/hooks/use-scroll-lock";
 import type { MediaPhoto } from "@/content/media";
 
 /**
@@ -27,6 +28,7 @@ export function Lightbox({
   const restoreRef = useRef<HTMLElement | null>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const touchX = useRef<number | null>(null);
+  useScrollLock(open);
 
   const go = useCallback(
     (dir: 1 | -1) => {
@@ -47,11 +49,8 @@ export function Lightbox({
       if (e.key === "Tab") e.preventDefault(); // focus piégé sur les contrôles
     };
     document.addEventListener("keydown", onKey);
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prevOverflow;
       restoreRef.current?.focus();
     };
   }, [open, go, onClose]);

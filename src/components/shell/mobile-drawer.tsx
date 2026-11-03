@@ -10,6 +10,7 @@ import { GoldArcs } from "@/components/shell/gold-arcs";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { activeSidebarIndex, churchPanelHref, churchSidebarNav, mainNav, mediaNav, publicSidebarNav, routes } from "@/content/navigation";
+import { useScrollLock } from "@/hooks/use-scroll-lock";
 import { useSignedIn } from "@/hooks/use-signed-in";
 import { cn } from "@/lib/utils";
 
@@ -28,18 +29,14 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
   /** Page CTF CHURCH (`/`) : le menu liste les ministères de l'Église. */
   const isChurchHome = pathname === "/";
 
+  useScrollLock(open);
+
   useEffect(() => {
     if (!open) return;
-    const root = document.documentElement;
-    const prev = root.style.overflow;
-    root.style.overflow = "hidden";
     closeRef.current?.focus();
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
-    return () => {
-      root.style.overflow = prev;
-      window.removeEventListener("keydown", onKey);
-    };
+    return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
   return (
@@ -66,8 +63,13 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
           >
             <span aria-hidden className="absolute inset-y-0 right-0 w-px bg-linear-to-b from-or/70 via-or/35 to-or/10" />
             <div className="flex items-center justify-between px-5 pt-5 pb-3">
-              <Link href="/" onClick={onClose} aria-label="CTF CHURCH — Accueil" className="rounded-full">
-                <BrandMedallion size={64} />
+              <Link
+                href="/"
+                onClick={onClose}
+                aria-label="CTF CHURCH — Accueil"
+                className="relative block size-20 overflow-hidden rounded-xl border border-or/15 bg-noir shadow-[inset_0_0_40px_rgb(0_0_0/0.55)]"
+              >
+                <BrandMedallion size={80} src="/ctf-card.png" className="size-full object-contain" />
               </Link>
               <button
                 ref={closeRef}

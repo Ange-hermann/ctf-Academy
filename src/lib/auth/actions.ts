@@ -56,8 +56,12 @@ export async function signInAction(input: unknown): Promise<ActionResult<{ redir
       data: { user },
     } = await supabase.auth.getUser();
     if (user && db) {
-      const userRoles = await db.user_roles.findMany({ where: { user_id: user.id }, select: { role: true } });
-      if (userRoles.some((r) => r.role !== "student")) redirectTo = routes.admin;
+      try {
+        const userRoles = await db.user_roles.findMany({ where: { user_id: user.id }, select: { role: true } });
+        if (userRoles.some((r) => r.role !== "student")) redirectTo = routes.admin;
+      } catch {
+        // Base injoignable : la session est déjà validée, la connexion réussit quand même.
+      }
     }
   }
   return { ok: true, data: { redirectTo } };
