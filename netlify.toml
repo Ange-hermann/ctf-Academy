@@ -7,5 +7,8 @@
 [build.environment]
   # Next.js 16 exige Node ≥ 20.9 ; épinglé pour éviter le runtime par défaut.
   NODE_VERSION = "22"
-  # La clé publique VAPID est embarquée dans le bundle client (par design).
-  SECRETS_SCAN_OMIT_KEYS = "EMAIL_PROVIDER,PAYMENT_PROVIDER,WHATSAPP_PROVIDER,NEXT_PUBLIC_SITE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_WHATSAPP_NUMBER,NEXT_PUBLIC_VAPID_PUBLIC_KEY"
+  # La clé publique VAPID est embarquée dans le bundle client (par design) ;
+  # VAPID_PRIVATE_KEY n'existe que dans les bundles serveur/fonctions.
+  SECRETS_SCAN_OMIT_KEYS = "EMAIL_PROVIDER,PAYMENT_PROVIDER,WHATSAPP_PROVIDER,NEXT_PUBLIC_SITE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_WHATSAPP_NUMBER,NEXT_PUBLIC_VAPID_PUBLIC_KEY,VAPID_PRIVATE_KEY"
+  # Le cache de build (.netlify/) n'est pas publié : inutile de le scanner.
+  SECRETS_SCAN_OMIT_PATHS = ".netlify/"
