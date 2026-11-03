@@ -71,11 +71,15 @@ export const formations: Formation[] = [
     ],
     duration: { label: "3 mois", isExample: false },
     rhythm: "Cours en ligne et en présentiel, sessions en direct sur Zoom", // TODO: texte officiel
-    // TODO: texte officiel — intitulés des niveaux 2 et 3
+    // TODO: texte officiel — intitulé du niveau 2
     levels: [
       { title: "Niveau 1 — L'entrée dans la famille", description: "Dieu, l'homme, le péché, Jésus et le baptême." },
       { title: "Niveau 2 — Croissance", description: "Caractère, discipline spirituelle et vie de l'Église." },
-      { title: "Niveau 3 — Service", description: "Les départements, le travail en équipe et la fidélité." },
+      {
+        title: "Niveau 3 — Développer le caractère du Christ",
+        description:
+          "L'amour, la joie, la paix, la patience, la bonté, la bienveillance, la fidélité, la douceur, la maîtrise de soi et l'humilité.",
+      },
       { title: "Niveau 4 — L'expansion sociale du disciple", description: "La gestion financière, le travail, l'entrepreneuriat, l'épargne et l'excellence." },
     ],
     fees: { registration: { value: 10000, isExample: false }, training: { value: 30000, isExample: false } },

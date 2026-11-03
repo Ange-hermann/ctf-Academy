@@ -184,11 +184,11 @@ export function TopBar() {
               type="button"
               aria-label="Rechercher (Ctrl+K)"
               onClick={() => setSearchOpen(true)}
-              className="grid size-10 place-items-center rounded-xl text-or transition-colors hover:bg-or/10 hover:text-or-light lg:size-11"
+              className="grid size-9 place-items-center rounded-xl text-or transition-colors hover:bg-or/10 hover:text-or-light lg:size-11"
             >
               <Search aria-hidden className="size-[22px]" />
             </button>
-            <ThemeToggle className="size-10 lg:size-11" iconClassName="size-[22px]" />
+            <ThemeToggle className="size-9 lg:size-11" iconClassName="size-[22px]" />
             <Divider className="hidden self-center lg:block" />
             <button
               type="button"
@@ -203,7 +203,7 @@ export function TopBar() {
               <Link
                 href={signedIn ? routes.studentSpace : routes.register}
                 aria-label={signedIn ? "Mon espace" : "S'inscrire"}
-                className="grid size-10 place-items-center rounded-xl bg-gradient-or font-nav text-base font-extrabold text-noir shadow-gold"
+                className="grid size-9 place-items-center rounded-xl bg-gradient-or font-nav text-sm font-extrabold text-noir shadow-gold"
               >
                 S
               </Link>

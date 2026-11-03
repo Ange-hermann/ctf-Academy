@@ -7,7 +7,6 @@ import { AnimatePresence, motion } from "motion/react";
 import { ChevronDown, X } from "lucide-react";
 import { BrandMedallion } from "@/components/shell/brand-medallion";
 import { GoldArcs } from "@/components/shell/gold-arcs";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { activeSidebarIndex, churchPanelHref, churchSidebarNav, mainNav, mediaNav, publicSidebarNav, routes } from "@/content/navigation";
 import { useScrollLock } from "@/hooks/use-scroll-lock";
 import { cn } from "@/lib/utils";
@@ -177,12 +176,7 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
               </nav>
             </div>
 
-            <div className="relative px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-3">
-              <div className="relative z-10 flex items-center justify-center">
-                <ThemeToggle />
-              </div>
-              <GoldArcs animated={false} className="absolute inset-x-0 bottom-0 -z-0 h-28 opacity-60" />
-            </div>
+            <GoldArcs animated={false} className="pointer-events-none absolute inset-x-0 bottom-0 h-28 opacity-60" />
           </motion.div>
         </motion.div>
       )}
