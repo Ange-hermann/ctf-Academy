@@ -22,9 +22,11 @@ export type SiteSettings = {
 
 const DEFAULT_NOTICE = "Les inscriptions sont momentanément fermées. Revenez bientôt ou contactez l'équipe pour la prochaine session.";
 
-/** Réglages du site (cachés par requête ; invalidés à chaque mise à jour depuis /admin/parametres). */
+/** Réglages du site (cachés par requête ; invalidés à chaque mise à jour depuis /admin/parametres).
+ *  Base injoignable (build CI, coupure réseau) → valeurs par défaut plutôt qu'échec de rendu. */
 export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
-  const rows = (await getDb()?.site_settings.findMany({ select: { key: true, value: true } })) ?? [];
+  const db = getDb();
+  const rows = db ? await db.site_settings.findMany({ select: { key: true, value: true } }).catch(() => [] as { key: string; value: string }[]) : [];
   const map = new Map(rows.map((r) => [r.key, r.value]));
   return {
     whatsappNumber: (map.get(settingKeys.whatsappNumber) || siteConfig.whatsappNumber).replace(/\D/g, ""),
