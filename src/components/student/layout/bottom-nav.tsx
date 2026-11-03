@@ -8,7 +8,6 @@ import { studentIcons } from "@/components/student/layout/icons";
 import { MessagesBadge } from "@/components/student/layout/shell-data";
 import { bottomNav, isActiveHref, studentRoutes, type StudentNavItem } from "@/config/student-nav";
 import { useStudentUi } from "@/lib/student/ui-store";
-import { whatsappLink } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -217,14 +216,12 @@ function MoreSheet({
                 </Link>
               </li>
               <li>
-                <a
-                  href={whatsappLink("Bonjour CTF ACADEMY, j'ai besoin d'aide dans mon espace étudiant.")}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href={studentRoutes.messages}
                   className="flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-line text-blanc/80"
                 >
-                  <MessageCircle aria-hidden className="size-4.5 text-or" /> Aide WhatsApp
-                </a>
+                  <MessageCircle aria-hidden className="size-4.5 text-or" /> Messages
+                </Link>
               </li>
             </ul>
           </motion.div>

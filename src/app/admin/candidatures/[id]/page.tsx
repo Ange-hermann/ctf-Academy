@@ -14,6 +14,7 @@ export default async function CandidatureDetailPage({ params }: PageProps<"/admi
   const d = await getApplicationDetail(ctx, id);
   if (!d) notFound();
   const canDecide = ctx.roles.includes("admin") || ctx.roles.includes("admissions");
+  const canConfirmPayments = ctx.roles.includes("admin") || ctx.roles.includes("finance");
 
   return (
     <>
@@ -142,7 +143,7 @@ export default async function CandidatureDetailPage({ params }: PageProps<"/admi
                     <p className="mt-1 text-xs text-blanc/55">
                       {p.method} · {p.provider} · {formatShortDate(p.createdAt, "UTC")}
                     </p>
-                    {canDecide && <div className="mt-2"><PaymentActions paymentId={p.id} status={p.status} /></div>}
+                    {canConfirmPayments && <div className="mt-2"><PaymentActions paymentId={p.id} status={p.status} /></div>}
                   </li>
                 ))}
               </ul>

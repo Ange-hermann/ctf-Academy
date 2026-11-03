@@ -5,7 +5,6 @@ import { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowRight, X } from "lucide-react";
 import { BrandMedallion } from "@/components/shell/brand-medallion";
-import { PerfToggle } from "@/components/layout/perf-toggle";
 import { Button } from "@/components/ui/button";
 import { mainNav, mediaNav, routes } from "@/content/navigation";
 import { useSignedIn } from "@/hooks/use-signed-in";
@@ -142,7 +141,6 @@ export function FullMenu({ open, onClose }: { open: boolean; onClose: () => void
                     {signedIn ? "Mon espace" : "S'inscrire maintenant"} <ArrowRight />
                   </Link>
                 </Button>
-                <PerfToggle />
               </div>
             </motion.div>
           </div>

@@ -1,6 +1,7 @@
 import "server-only";
 import { assessmentHref, studentRoutes } from "@/config/student-nav";
 import type { Tx } from "@/lib/student/session";
+import { forLevels, getStudentLevels } from "@/lib/student/queries/levels";
 
 export type EventKind = "live" | "assessment" | "payment" | "milestone";
 
@@ -25,8 +26,14 @@ export type StudentEvent = {
  */
 export async function getEvents(tx: Tx, range: { from: Date; to: Date }): Promise<StudentEvent[]> {
   const between = { gte: range.from, lte: range.to };
-  const lives = await tx.live_sessions.findMany({ where: { starts_at: between }, orderBy: { starts_at: "asc" } });
-  const quizzes = await tx.quizzes.findMany({ where: { due_at: between }, orderBy: { due_at: "asc" } });
+  // Classe de l'étudiant : séances et événements de son niveau en cours, évaluations des niveaux ouverts.
+  const levels = await getStudentLevels(tx);
+  const lives = (await tx.live_sessions.findMany({ where: { starts_at: between }, orderBy: { starts_at: "asc" } })).filter((l) =>
+    forLevels(l.level_id, levels.current),
+  );
+  const quizzes = (await tx.quizzes.findMany({ where: { due_at: between }, orderBy: { due_at: "asc" } })).filter((q) =>
+    forLevels(q.level_id, levels.unlocked),
+  );
   const attempts = await tx.quiz_attempts.findMany({
     where: { status: { in: ["submitted", "graded"] } },
     select: { quiz_id: true },
@@ -35,7 +42,9 @@ export async function getEvents(tx: Tx, range: { from: Date; to: Date }): Promis
     where: { due_date: between, status: { not: "paid" } },
     orderBy: { due_date: "asc" },
   });
-  const custom = await tx.calendar_events.findMany({ where: { starts_at: between }, orderBy: { starts_at: "asc" } });
+  const custom = (await tx.calendar_events.findMany({ where: { starts_at: between }, orderBy: { starts_at: "asc" } })).filter((c) =>
+    forLevels(c.level_id, levels.current),
+  );
   const done = new Set(attempts.map((a) => a.quiz_id));
 
   const events: StudentEvent[] = [

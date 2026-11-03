@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   CircleHelp,
   FileText,
+  Headphones,
   ListVideo,
   Lock,
   Maximize2,
@@ -39,7 +40,7 @@ import type { LessonKind } from "@/lib/student/queries/learning";
 import { useStudentUi } from "@/lib/student/ui-store";
 import { cn } from "@/lib/utils";
 
-const lessonIcons: Record<LessonKind, typeof PlayCircle> = { video: PlayCircle, live: Video, text: FileText, pdf: FileText };
+const lessonIcons: Record<LessonKind, typeof PlayCircle> = { video: PlayCircle, audio: Headphones, live: Video, text: FileText, pdf: FileText };
 
 const tabs = [
   { id: "contenu", label: "Contenu", icon: BookOpen },
@@ -191,6 +192,26 @@ export function LessonPlayer({ detail, timezone }: { detail: LessonDetail; timez
             <p className="mb-6 rounded-2xl border border-line bg-noir/40 p-5 text-blanc/60">
               La vidéo de cette leçon sera publiée prochainement. Le contenu écrit est déjà disponible ci-dessous.
             </p>
+          )}
+          {lesson.kind === "audio" && lesson.audioUrl && (
+            <div className="mb-6 flex flex-col gap-4 rounded-3xl border border-or/25 bg-gradient-card p-5 sm:flex-row sm:items-center sm:p-6">
+              <span className="grid size-14 shrink-0 place-items-center rounded-2xl border border-or/30 bg-or/10 text-or-light">
+                <Headphones aria-hidden className="size-7" />
+              </span>
+              <audio
+                controls
+                preload="metadata"
+                src={lesson.audioUrl}
+                className="w-full"
+                aria-label={`Audio : ${lesson.title}`}
+                onEnded={() => void complete(true)}
+              >
+                Votre navigateur ne lit pas l&rsquo;audio intégré.
+              </audio>
+            </div>
+          )}
+          {lesson.kind === "audio" && !lesson.audioUrl && (
+            <p className="mb-6 rounded-2xl border border-line bg-noir/40 p-5 text-blanc/60">L&rsquo;enregistrement audio de cette leçon sera publié prochainement.</p>
           )}
           {pdfResource && (
             <div className="mb-6 overflow-hidden rounded-3xl border border-line">

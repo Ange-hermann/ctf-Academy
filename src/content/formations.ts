@@ -71,12 +71,12 @@ export const formations: Formation[] = [
     ],
     duration: { label: "3 mois", isExample: false },
     rhythm: "Cours en ligne et en présentiel, sessions en direct sur Zoom", // TODO: texte officiel
-    // TODO: texte officiel — intitulés des niveaux 2 à 4
+    // TODO: texte officiel — intitulés des niveaux 2 et 3
     levels: [
       { title: "Niveau 1 — L'entrée dans la famille", description: "Dieu, l'homme, le péché, Jésus et le baptême." },
       { title: "Niveau 2 — Croissance", description: "Caractère, discipline spirituelle et vie de l'Église." },
       { title: "Niveau 3 — Service", description: "Les départements, le travail en équipe et la fidélité." },
-      { title: "Niveau 4 — Excellence", description: "Responsabilité, exemplarité et préparation à la graduation STAF." },
+      { title: "Niveau 4 — L'expansion sociale du disciple", description: "La gestion financière, le travail, l'entrepreneuriat, l'épargne et l'excellence." },
     ],
     fees: { registration: { value: 10000, isExample: false }, training: { value: 30000, isExample: false } },
     requiresSelection: false,

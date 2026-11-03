@@ -8,6 +8,7 @@ import { Reveal } from "@/components/ui/reveal";
 import { SectionTitle } from "@/components/ui/section-title";
 import { churchPresentation, contact, gallery, worship } from "@/content/church";
 import { pageMetadata } from "@/lib/seo";
+import { getSiteSettings } from "@/lib/site-settings";
 import { cn } from "@/lib/utils";
 import { whatsappLink } from "@/lib/whatsapp";
 
@@ -48,7 +49,8 @@ function StylizedMap() {
   );
 }
 
-export default function ChurchPage() {
+export default async function ChurchPage() {
+  const settings = await getSiteSettings();
   return (
     <>
       <PageHero
@@ -64,11 +66,13 @@ export default function ChurchPage() {
           { label: "Notre Église", href: "/decouvrir/notre-eglise" },
         ]}
       >
-        <Button asChild size="lg" variant="outline">
-          <a href={whatsappLink("Bonjour, je souhaite contacter le Centre de Transformation des Familles.")} target="_blank" rel="noopener noreferrer">
-            <MessageCircle /> Nous contacter
-          </a>
-        </Button>
+        {settings.whatsappNumber && (
+          <Button asChild size="lg" variant="outline">
+            <a href={whatsappLink(settings.whatsappNumber, "Bonjour, je souhaite contacter le Centre de Transformation des Familles.")} target="_blank" rel="noopener noreferrer">
+              <MessageCircle /> Nous contacter
+            </a>
+          </Button>
+        )}
       </PageHero>
 
       <section className="px-5 py-20 sm:px-8">

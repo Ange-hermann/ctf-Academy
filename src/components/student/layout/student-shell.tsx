@@ -106,7 +106,7 @@ export function StudentShell({ children, user, formation, shell, initialCollapse
         <div
           className={cn(
             "transition-[padding] duration-300 ease-out-expo",
-            !focusMode && (collapsed ? "lg:pl-20" : "lg:pl-68"),
+            !focusMode && (collapsed ? "lg:pl-sidebar-rail" : "lg:pl-sidebar"),
           )}
         >
           {!focusMode && <Topbar user={user} formationAcronym={formation.acronym} />}

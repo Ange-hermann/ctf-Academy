@@ -7,7 +7,6 @@ import { AnimatePresence, motion } from "motion/react";
 import { ArrowRight, ChevronDown, X } from "lucide-react";
 import { BrandMedallion } from "@/components/shell/brand-medallion";
 import { GoldArcs } from "@/components/shell/gold-arcs";
-import { PerfToggle } from "@/components/layout/perf-toggle";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { activeSidebarIndex, churchPanelHref, churchSidebarNav, mainNav, mediaNav, publicSidebarNav, routes } from "@/content/navigation";
@@ -176,8 +175,7 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
                   {signedIn ? "Mon espace" : "S'inscrire"} <ArrowRight />
                 </Link>
               </Button>
-              <div className="relative z-10 mt-3 flex items-center justify-center gap-2">
-                <PerfToggle />
+              <div className="relative z-10 mt-3 flex items-center justify-center">
                 <ThemeToggle />
               </div>
               <GoldArcs animated={false} className="absolute inset-x-0 bottom-0 -z-0 h-28 opacity-60" />

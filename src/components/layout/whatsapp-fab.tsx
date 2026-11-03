@@ -1,11 +1,12 @@
 import { MessageCircle } from "lucide-react";
 import { whatsappLink } from "@/lib/whatsapp";
 
-/** Bouton flottant d'aide WhatsApp (présent sur toutes les pages publiques). */
-export function WhatsAppFab() {
+/** Bouton flottant d'aide WhatsApp (présent sur toutes les pages publiques quand un numéro est configuré). */
+export function WhatsAppFab({ number }: { number: string }) {
+  if (!number) return null;
   return (
     <a
-      href={whatsappLink()}
+      href={whatsappLink(number)}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Besoin d'aide ? Écrivez-nous sur WhatsApp"

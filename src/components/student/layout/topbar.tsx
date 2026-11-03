@@ -13,7 +13,6 @@ import { routes } from "@/config/navigation";
 import { studentRoutes } from "@/config/student-nav";
 import { signOutAction } from "@/lib/auth/actions";
 import { useStudentUi } from "@/lib/student/ui-store";
-import { whatsappLink } from "@/lib/whatsapp";
 
 export type ShellUser = {
   userId: string;
@@ -125,7 +124,7 @@ function BellLoader() {
   return <NotificationBell initial={data.notifications} />;
 }
 
-/** Barre supérieure : recherche globale (Ctrl/Cmd + K), aide WhatsApp, notifications temps réel, compte. */
+/** Barre supérieure : recherche globale (Ctrl/Cmd + K), messagerie, notifications temps réel, compte. */
 export function Topbar({ user, formationAcronym }: { user: ShellUser; formationAcronym: string }) {
   const setPalette = useStudentUi((s) => s.setPalette);
   return (
@@ -157,16 +156,14 @@ export function Topbar({ user, formationAcronym }: { user: ShellUser; formationA
         </button>
         <div className="flex items-center gap-1 lg:ml-auto">
           <ThemeToggle className="rounded-full text-blanc/75 hover:text-or-light" iconClassName="size-5" />
-          <a
-            href={whatsappLink("Bonjour CTF ACADEMY, j'ai besoin d'aide dans mon espace étudiant.")}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Aide WhatsApp"
-            title="Aide WhatsApp"
+          <Link
+            href={studentRoutes.messages}
+            aria-label="Messages"
+            title="Messages"
             className="hidden size-11 place-items-center rounded-full text-blanc/75 transition-colors hover:bg-or/10 hover:text-or-light sm:grid"
           >
             <MessageCircle aria-hidden className="size-5" />
-          </a>
+          </Link>
           <Suspense
             fallback={
               <span className="grid size-11 place-items-center text-blanc/40">

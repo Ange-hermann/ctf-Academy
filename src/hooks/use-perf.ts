@@ -2,48 +2,23 @@
 
 import { useSyncExternalStore } from "react";
 
-export type PerfTier = "full" | "lite";
-export const PERF_STORAGE_KEY = "ctf-perf";
-
 const subscribe = (onChange: () => void) => {
-  const observer = new MutationObserver(onChange);
-  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-perf", "data-motion"] });
   const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
   mq.addEventListener("change", onChange);
-  return () => {
-    observer.disconnect();
-    mq.removeEventListener("change", onChange);
-  };
+  return () => mq.removeEventListener("change", onChange);
 };
 
-const snapshot = () => {
-  const el = document.documentElement;
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  return `${el.dataset.perf === "lite" ? "lite" : "full"}|${reduced ? 1 : 0}`;
-};
+const snapshot = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /**
- * Niveau de performance de l'appareil (fixé avant le premier rendu par le script `perfScript`).
- * Côté serveur : `ready = false` → les composants affichent leur version légère.
+ * Préférence système « réduire les animations » (accessibilité). Le site
+ * affiche toujours l'expérience complète ; seule cette préférence de l'OS
+ * peut couper les animations.
  */
 export function usePerf() {
-  const value = useSyncExternalStore(subscribe, snapshot, () => null);
-  if (!value) return { ready: false, tier: "lite" as PerfTier, reducedMotion: false, canAnimate3D: false };
-  const [tier, reduced] = value.split("|");
-  const reducedMotion = reduced === "1";
-  return {
-    ready: true,
-    tier: tier as PerfTier,
-    reducedMotion,
-    canAnimate3D: tier === "full" && !reducedMotion,
-  };
-}
-
-export function setPerfPreference(tier: PerfTier) {
-  try {
-    localStorage.setItem(PERF_STORAGE_KEY, tier);
-  } catch {
-    /* stockage indisponible : préférence non mémorisée */
+  const reduced = useSyncExternalStore<boolean | null>(subscribe, snapshot, () => null);
+  if (reduced === null) {
+    return { ready: false, tier: "full", reducedMotion: false, canAnimate3D: false };
   }
-  document.documentElement.dataset.perf = tier;
+  return { ready: true, tier: "full", reducedMotion: reduced, canAnimate3D: !reduced };
 }

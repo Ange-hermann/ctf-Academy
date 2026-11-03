@@ -50,3 +50,42 @@ self.addEventListener("fetch", (event) => {
     );
   }
 });
+
+/* ── Notifications push ────────────────────────────────────────────────
+   Reçoit les payloads du serveur ({ title, body, href }) et affiche une
+   notification système — reçue même application fermée, sur téléphone
+   comme sur ordinateur, selon les souscriptions enregistrées. Le son et la
+   vibration dépendent des réglages du navigateur / de l'appareil. */
+self.addEventListener("push", (event) => {
+  let data = { title: "CTF ACADEMY", body: "", href: "/" };
+  try {
+    if (event.data) data = { ...data, ...event.data.json() };
+  } catch {
+    /* payload illisible : valeurs par défaut */
+  }
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: "/icon.png",
+      badge: "/icon.png",
+      vibrate: [80, 40, 80],
+      data: { href: data.href || "/" },
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const href = (event.notification.data && event.notification.data.href) || "/";
+  const url = new URL(href, self.location.origin).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+      for (const client of list) {
+        if (client.url.startsWith(self.location.origin) && "focus" in client) {
+          return client.focus().then((c) => (c && "navigate" in c ? c.navigate(url) : c));
+        }
+      }
+      return self.clients.openWindow(url);
+    }),
+  );
+});

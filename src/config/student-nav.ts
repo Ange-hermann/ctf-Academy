@@ -25,7 +25,7 @@ export const resultHref = (id: string, attemptId?: string) =>
 export type StudentIcon =
   | "dashboard" | "courses" | "assessments" | "progress" | "calendar" | "payments" | "validations" | "messages"
   | "compass" | "profile" | "levels" | "exercises" | "graduation" | "service" | "mentoring" | "leadership"
-  | "responsibilities" | "internship" | "report" | "thesis" | "consecration";
+  | "responsibilities" | "internship" | "report" | "thesis" | "consecration" | "fiche";
 
 export type StudentNavItem = { label: string; href: string; icon: StudentIcon; description: string };
 
@@ -55,13 +55,16 @@ export const formationNav: Record<FormationSlug, StudentNavItem[]> = {
     { label: "Validation des niveaux", href: "/espace-etudiant/eds/validation", icon: "validations", description: "Critères et décisions" },
     { label: "Graduation STAF", href: "/espace-etudiant/eds/graduation", icon: "graduation", description: "Conditions et cérémonie" },
     { label: "Reconnaissance du service", href: "/espace-etudiant/eds/service", icon: "service", description: "Heures et attestation" },
+    { label: "Suivi du stage pratique", href: "/espace-etudiant/eds/stage", icon: "internship", description: "Département, étapes, heures" },
   ],
   edm: [
+    { label: "Fiche de transformation", href: "/espace-etudiant/edm/fiche", icon: "fiche", description: "Rapport hebdomadaire du mentor" },
     { label: "Cours des 2 niveaux", href: "/espace-etudiant/edm/niveaux", icon: "levels", description: "Les paliers de l'EDM" },
     { label: "Exercices de mentorat", href: "/espace-etudiant/edm/mentorat", icon: "mentoring", description: "Rencontres et comptes rendus" },
     { label: "Travaux de leadership", href: "/espace-etudiant/edm/leadership", icon: "leadership", description: "Travaux à rendre et retours" },
     { label: "Validation du parcours", href: "/espace-etudiant/edm/validation", icon: "validations", description: "Critères et décision" },
     { label: "Suivi des responsabilités", href: "/espace-etudiant/edm/responsabilites", icon: "responsibilities", description: "Rôles confiés et suivi" },
+    { label: "Suivi du stage pratique", href: "/espace-etudiant/edm/stage", icon: "internship", description: "Vase d'honneur, étapes, heures" },
   ],
   diacres: [
     { label: "Cours et évaluations", href: "/espace-etudiant/diacres/cours", icon: "courses", description: "Modules et évaluations" },

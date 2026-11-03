@@ -46,4 +46,5 @@ export const studentIcons: Record<StudentIcon, LucideIcon> = {
   report: FileText,
   thesis: ScrollText,
   consecration: Church,
+  fiche: ClipboardList,
 };

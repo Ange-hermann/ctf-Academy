@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { Play } from "lucide-react";
 import { usePerf } from "@/hooks/use-perf";
 import { cn } from "@/lib/utils";
 
@@ -10,10 +9,11 @@ const SWITCH_MS = 3000;
 
 /**
  * Cadre à contenus alternés : l'image et la vidéo se relaient toutes les 3 s
- * en fondu enchaîné (opacity uniquement). La vidéo ne démarre jamais seule :
- * le bouton lecture la lance à la demande et elle est mise en pause dès que
- * l'image revient. Mode allégé ou prefers-reduced-motion : l'image seule
- * reste affichée et la vidéo n'est pas chargée.
+ * en fondu enchaîné (opacity uniquement). Pendant sa phase, la vidéo joue
+ * muette en boucle — uniquement tant qu'elle est visible à l'écran ; elle
+ * est mise en pause dès que l'image revient ou que le cadre sort du champ.
+ * prefers-reduced-motion : l'image seule reste affichée et la vidéo n'est
+ * pas chargée.
  */
 export function CardSwitcher({
   image,
@@ -26,10 +26,10 @@ export function CardSwitcher({
   alt: string;
   onPhaseChange?: (showVideo: boolean) => void;
 }) {
-  const { tier, reducedMotion } = usePerf();
-  const animate = tier === "full" && !reducedMotion;
+  const { ready, reducedMotion } = usePerf();
+  const animate = ready && !reducedMotion;
   const [showVideo, setShowVideo] = useState(false);
-  const [playing, setPlaying] = useState(false);
+  const [visible, setVisible] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -39,11 +39,21 @@ export function CardSwitcher({
   }, [animate]);
 
   useEffect(() => {
-    onPhaseChange?.(showVideo);
-    if (!showVideo) videoRef.current?.pause();
-  }, [showVideo, onPhaseChange]);
+    if (!animate) return;
+    const v = videoRef.current;
+    if (!v) return;
+    const io = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), { threshold: 0.2 });
+    io.observe(v);
+    return () => io.disconnect();
+  }, [animate]);
 
-  const play = () => void videoRef.current?.play().catch(() => undefined);
+  useEffect(() => {
+    onPhaseChange?.(showVideo);
+    const v = videoRef.current;
+    if (!v) return;
+    if (showVideo && visible) void v.play().catch(() => undefined);
+    else v.pause();
+  }, [showVideo, visible, onPhaseChange]);
 
   return (
     <>
@@ -55,34 +65,21 @@ export function CardSwitcher({
         className="object-cover"
       />
       {animate && (
-        <>
-          <video
-            ref={videoRef}
-            src={video}
-            poster={image}
-            aria-hidden
-            loop
-            playsInline
-            preload="metadata"
-            disablePictureInPicture
-            onPlay={() => setPlaying(true)}
-            onPause={() => setPlaying(false)}
-            className={cn(
-              "absolute inset-0 size-full object-cover transition-opacity duration-700",
-              showVideo ? "opacity-100" : "opacity-0",
-            )}
-          />
-          {showVideo && !playing && (
-            <button
-              type="button"
-              onClick={play}
-              aria-label={`Lire la vidéo : ${alt}`}
-              className="absolute left-1/2 top-1/2 z-20 grid size-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 border-or-light bg-noir/60 text-or-light transition-colors hover:bg-or hover:text-noir"
-            >
-              <Play aria-hidden className="size-5 fill-current" />
-            </button>
+        <video
+          ref={videoRef}
+          src={video}
+          poster={image}
+          aria-hidden
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          disablePictureInPicture
+          className={cn(
+            "absolute inset-0 size-full object-cover transition-opacity duration-700",
+            showVideo ? "opacity-100" : "opacity-0",
           )}
-        </>
+        />
       )}
     </>
   );

@@ -617,8 +617,10 @@ model announcements {
   author_name        String               @default("CTF ACADEMY")
   published_at       DateTime             @default(now()) @db.Timestamptz(6)
   is_example         Boolean              @default(true)
+  level_id           String?              @db.Uuid
   announcement_reads announcement_reads[]
   formations         formations?          @relation(fields: [formation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  levels             levels?              @relation(fields: [level_id], references: [id], onUpdate: NoAction)
 
   @@schema("public")
 }
@@ -689,6 +691,17 @@ model audit_log {
   @@schema("public")
 }
 
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model site_settings {
+  key        String    @id
+  value      String    @default("")
+  updated_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_by String?   @db.Uuid
+  profiles   profiles? @relation(fields: [updated_by], references: [id], onUpdate: NoAction)
+
+  @@schema("public")
+}
+
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model calendar_events {
@@ -703,8 +716,10 @@ model calendar_events {
   zoom_url     String?
   href         String?
   is_example   Boolean     @default(true)
+  level_id     String?     @db.Uuid
   formations   formations? @relation(fields: [formation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   profiles     profiles?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  levels       levels?     @relation(fields: [level_id], references: [id], onUpdate: NoAction)
 
   @@schema("public")
 }
@@ -793,6 +808,7 @@ model formations {
   modules            modules[]
   quizzes            quizzes[]
   sessions           public_sessions[]
+  trainer_assignments trainer_assignments[]
   validations        validations[]
 
   @@schema("public")
@@ -1007,6 +1023,10 @@ model levels {
   modules      modules[]
   quizzes      quizzes[]
   validations  validations[]
+  trainer_assignments trainer_assignments[]
+  live_sessions       live_sessions[]
+  calendar_events     calendar_events[]
+  announcements       announcements[]
 
   @@unique([formation_id, number])
   @@schema("public")
@@ -1024,8 +1044,10 @@ model live_sessions {
   zoom_url         String?
   replay_url       String?
   is_example       Boolean    @default(true)
+  level_id         String?    @db.Uuid
   formations       formations @relation(fields: [formation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   modules          modules?   @relation(fields: [module_id], references: [id], onUpdate: NoAction)
+  levels           levels?    @relation(fields: [level_id], references: [id], onUpdate: NoAction)
 
   @@index([formation_id, starts_at], map: "live_sessions_formation_idx")
   @@schema("public")
@@ -1048,6 +1070,57 @@ model mentoring_exercises {
   is_example   Boolean     @default(true)
   profiles     profiles    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
+  @@schema("public")
+}
+
+/// Fiche de transformation hebdomadaire EDM : une ligne par étudiant et par vendredi d'ouverture.
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model edm_weekly_reports {
+  id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id              String    @db.Uuid
+  week_start           DateTime  @db.Date
+  prayer_days          Int       @default(0) @db.SmallInt
+  prayer_hours         String    @default("") @db.VarChar(20)
+  mentoree_prayer_time String    @default("") @db.VarChar(20)
+  method_simple        Int       @default(0) @db.SmallInt
+  method_oia           Int       @default(0) @db.SmallInt
+  method_theme         Int       @default(0) @db.SmallInt
+  sermons_count        Int       @default(0) @db.SmallInt
+  character_trait      String    @default("") @db.VarChar(200)
+  tithe_given          Boolean   @default(false)
+  soul_won             Boolean   @default(false)
+  soul_won_detail      String    @default("") @db.VarChar(300)
+  invited              Boolean   @default(false)
+  invited_detail       String    @default("") @db.VarChar(300)
+  departments_report   String    @default("")
+  mentorees_report     String    @default("")
+  status               String    @default("submitted") @db.VarChar(10)
+  observation          String?
+  validated_by         String?   @db.Uuid
+  validated_at         DateTime? @db.Timestamptz(6)
+  is_example           Boolean   @default(false)
+  created_at           DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime  @default(now()) @db.Timestamptz(6)
+  profiles             profiles  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, week_start])
+  @@index([user_id, week_start(sort: Desc)], map: "edm_weekly_reports_user_idx")
+  @@schema("public")
+}
+
+/// Marqueurs anti-doublon des rappels de fiche EDM (30 min avant ouverture, 45 min avant fermeture).
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model reminder_dispatches {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kind       String   @db.VarChar(20)
+  week_start DateTime @db.Date
+  user_id    String   @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  profiles   profiles @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([kind, week_start, user_id])
   @@schema("public")
 }
 
@@ -1255,6 +1328,7 @@ model profiles {
   leadership_works                                     leadership_works[]
   lesson_progress                                      lesson_progress[]
   lesson_questions                                     lesson_questions[]
+  edm_weekly_reports                                   edm_weekly_reports[]
   mentoring_exercises                                  mentoring_exercises[]
   message_threads_message_threads_staff_idToprofiles   message_threads[]          @relation("message_threads_staff_idToprofiles")
   message_threads_message_threads_student_idToprofiles message_threads[]          @relation("message_threads_student_idToprofiles")
@@ -1267,17 +1341,37 @@ model profiles {
   users                                                users                      @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   quiz_attempts                                        quiz_attempts[]
   receipts                                             receipts[]
+  reminder_dispatches                                  reminder_dispatches[]
   responsibilities                                     responsibilities[]
   service_records                                      service_records[]
+  site_settings                                        site_settings[]
   student_notes                                        student_notes[]
   submissions                                          submissions[]
   support_tickets                                      support_tickets[]
   theses_theses_supervisor_idToprofiles                theses[]                   @relation("theses_supervisor_idToprofiles")
   theses_theses_user_idToprofiles                      theses?                    @relation("theses_user_idToprofiles")
+  trainer_assignments                                  trainer_assignments[]
   thesis_comments                                      thesis_comments[]
+  push_subscriptions                                   push_subscriptions[]
   thesis_versions                                      thesis_versions[]
   validations                                          validations[]
 
+  @@schema("public")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model push_subscriptions {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id      String    @db.Uuid
+  endpoint     String    @unique
+  p256dh       String
+  auth         String
+  user_agent   String?
+  created_at   DateTime  @default(now()) @db.Timestamptz(6)
+  last_used_at DateTime? @db.Timestamptz(6)
+  profiles     profiles  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([user_id], map: "push_subs_user_idx")
   @@schema("public")
 }
 
@@ -1566,6 +1660,21 @@ model thesis_versions {
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+/// This table contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model trainer_assignments {
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  trainer_id   String     @unique @db.Uuid
+  formation_id String     @db.Uuid
+  level_id     String?    @db.Uuid
+  created_at   DateTime   @default(now()) @db.Timestamptz(6)
+  formations   formations @relation(fields: [formation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  levels       levels?    @relation(fields: [level_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  profiles     profiles   @relation(fields: [trainer_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@schema("public")
+}
+
+/// This table contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model user_roles {
   user_id String   @db.Uuid
   role    app_role
@@ -1762,6 +1871,7 @@ enum lesson_kind {
   text
   pdf
   live
+  audio
 
   @@schema("public")
 }
@@ -1822,6 +1932,8 @@ enum resource_kind {
   pdf
   link
   document
+  audio
+  video
 
   @@schema("public")
 }

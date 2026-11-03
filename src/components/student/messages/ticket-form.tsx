@@ -8,9 +8,10 @@ import { useToast } from "@/components/ui/toast";
 import { createTicketAction } from "@/lib/student/actions/messages";
 
 const categories = [
-  { value: "technique", label: "Problème technique" },
-  { value: "cours", label: "Question sur un cours" },
+  { value: "connexion", label: "Connexion ou compte" },
+  { value: "video", label: "Vidéo ou audio illisible" },
   { value: "paiement", label: "Paiement" },
+  { value: "evaluation", label: "Évaluation ou note" },
   { value: "autre", label: "Autre demande" },
 ] as const;
 
@@ -19,7 +20,7 @@ export function TicketForm() {
   const toast = useToast();
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [category, setCategory] = useState<(typeof categories)[number]["value"]>("technique");
+  const [category, setCategory] = useState<(typeof categories)[number]["value"]>("connexion");
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
   const [pending, startTransition] = useTransition();

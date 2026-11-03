@@ -2,7 +2,7 @@ import "server-only";
 import type { KeyWordSlug } from "@/content/identity";
 import type { Tx } from "@/lib/student/session";
 
-export type LessonKind = "video" | "text" | "pdf" | "live";
+export type LessonKind = "video" | "audio" | "text" | "pdf" | "live";
 export type LessonState = "todo" | "in_progress" | "done";
 export type ModuleStatus = "todo" | "in_progress" | "done" | "locked";
 export type LevelStatus = "validated" | "pending_decision" | "current" | "upcoming" | "locked";

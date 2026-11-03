@@ -62,7 +62,7 @@ export default async function StudentDashboardPage() {
 
   return (
     <div className="relative">
-      <div aria-hidden className="lite-hide pointer-events-none fixed inset-0 z-0">
+      <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
         <GoldParticles density={26} />
       </div>
       <div className="relative z-10 grid gap-5 lg:grid-cols-12">

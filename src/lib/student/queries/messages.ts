@@ -1,5 +1,6 @@
 import "server-only";
 import { type EnrolledContext, withStudent } from "@/lib/student/session";
+import { forLevels, getStudentLevels } from "@/lib/student/queries/levels";
 
 export type ThreadCategory = "trainer" | "administrative";
 
@@ -120,14 +121,16 @@ export async function getThread(ctx: EnrolledContext, threadId: string): Promise
 
 /** Annonces (épinglées d'abord), avec marqueur de lecture propre à l'étudiant. */
 export async function getAnnouncements(ctx: EnrolledContext): Promise<AnnouncementItem[]> {
-  const rows = await withStudent(ctx.userId, (tx) =>
-    tx.announcements.findMany({
+  const { rows, levels } = await withStudent(ctx.userId, async (tx) => ({
+    levels: await getStudentLevels(tx),
+    rows: await tx.announcements.findMany({
       where: { OR: [{ formation_id: null }, { formation_id: ctx.enrollment.formationId }] },
       orderBy: [{ pinned: "desc" }, { published_at: "desc" }],
       include: { announcement_reads: { where: { user_id: ctx.userId }, select: { read_at: true } } },
     }),
-  );
-  return rows.map((a) => ({
+  }));
+  // Annonces de toute la formation + celles de la classe (niveau en cours) de l'étudiant.
+  return rows.filter((a) => forLevels(a.level_id, levels.current)).map((a) => ({
     id: a.id,
     title: a.title,
     body: a.body,

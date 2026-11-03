@@ -21,6 +21,8 @@ import {
 import { studentKeys } from "@/hooks/student/use-realtime";
 import { fetchNotificationsAction, markNotificationsReadAction } from "@/lib/student/actions/shell";
 import type { NotificationCategory, NotificationItem } from "@/lib/student/queries/shell";
+import { NotificationSettings } from "@/components/notifications/notification-settings";
+import { playChime } from "@/lib/notifications/chime";
 import { cn } from "@/lib/utils";
 
 const categoryIcons: Record<NotificationCategory, LucideIcon> = {
@@ -45,6 +47,13 @@ export function NotificationBell({ initial }: { initial: NotificationItem[] }) {
     staleTime: 30_000,
   });
   const unread = data.filter((n) => !n.read).length;
+
+  // Carillon quand une nouvelle notification arrive pendant que l'app est ouverte.
+  const previousUnread = useRef(unread);
+  useEffect(() => {
+    if (unread > previousUnread.current) void playChime();
+    previousUnread.current = unread;
+  }, [unread]);
 
   const markRead = useMutation({
     mutationFn: (ids: string[] | "all") => markNotificationsReadAction(ids),
@@ -183,6 +192,7 @@ export function NotificationBell({ initial }: { initial: NotificationItem[] }) {
                 })}
               </ul>
             )}
+            <NotificationSettings />
           </motion.div>
         )}
       </AnimatePresence>

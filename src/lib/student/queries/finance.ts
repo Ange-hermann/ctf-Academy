@@ -37,6 +37,7 @@ export const methodLabels: Record<string, string> = {
   orange_money: "Orange Money",
   mtn_momo: "MTN Mobile Money",
   wave: "Wave",
+  moov_money: "Moov Money",
   card: "Carte bancaire",
   cash: "Espèces",
   transfer: "Virement",

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Download, Eye, EyeOff, FileText, Link2 } from "lucide-react";
+import { Download, Eye, EyeOff, FileText, Headphones, Link2, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ResourceItem } from "@/lib/student/queries/courses";
 import { cn } from "@/lib/utils";
@@ -18,7 +18,9 @@ export function ResourceList({ resources, emptyText = "Aucune ressource pour le 
     <ul className="space-y-3">
       {resources.map((r) => {
         const isPdf = r.kind === "pdf";
-        const Icon = r.kind === "link" ? Link2 : FileText;
+        const isMedia = r.kind === "audio" || r.kind === "video";
+        const Icon = r.kind === "link" ? Link2 : r.kind === "audio" ? Headphones : r.kind === "video" ? PlayCircle : FileText;
+        const kindLabel = { link: "Lien externe", pdf: "PDF", document: "Document", audio: "Audio", video: "Vidéo" }[r.kind];
         return (
           <li key={r.id} className="overflow-hidden rounded-2xl border border-line bg-noir/40">
             <div className="flex flex-wrap items-center gap-3 p-4">
@@ -28,13 +30,14 @@ export function ResourceList({ resources, emptyText = "Aucune ressource pour le 
               <div className="min-w-0 flex-1">
                 <p className="font-medium text-blanc">{r.title}</p>
                 <p className="text-xs text-blanc/50 uppercase">
-                  {r.kind === "link" ? "Lien externe" : r.kind} {size(r.sizeBytes) && `· ${size(r.sizeBytes)}`}
+                  {kindLabel} {size(r.sizeBytes) && `· ${size(r.sizeBytes)}`}
                 </p>
               </div>
               <div className="flex gap-2">
-                {isPdf && (
+                {(isPdf || isMedia) && (
                   <Button size="sm" variant="ghost" onClick={() => setOpen(open === r.id ? null : r.id)} aria-expanded={open === r.id}>
-                    {open === r.id ? <EyeOff /> : <Eye />} {open === r.id ? "Fermer" : "Lire"}
+                    {open === r.id ? <EyeOff /> : r.kind === "audio" ? <Headphones /> : <Eye />}{" "}
+                    {open === r.id ? "Fermer" : r.kind === "audio" ? "Écouter" : r.kind === "video" ? "Voir" : "Lire"}
                   </Button>
                 )}
                 <Button asChild size="sm" variant="outline">
@@ -46,8 +49,14 @@ export function ResourceList({ resources, emptyText = "Aucune ressource pour le 
             </div>
             <AnimatePresence initial={false}>
               {open === r.id && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("border-t border-line bg-blanc")}>
-                  <iframe src={`${r.href}#view=FitH`} title={r.title} className="h-[70dvh] w-full" loading="lazy" />
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("border-t border-line", isPdf ? "bg-blanc" : "bg-noir p-4")}>
+                  {r.kind === "audio" ? (
+                    <audio controls preload="metadata" src={r.href} className="w-full" aria-label={r.title} />
+                  ) : r.kind === "video" ? (
+                    <video controls preload="metadata" src={r.href} className="aspect-video w-full rounded-xl bg-noir" aria-label={r.title} />
+                  ) : (
+                    <iframe src={`${r.href}#view=FitH`} title={r.title} className="h-[70dvh] w-full" loading="lazy" />
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>

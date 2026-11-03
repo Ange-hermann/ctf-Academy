@@ -48,7 +48,7 @@
   /* Dimensions du nouveau cadre (maquette 1672 × 941) */
   --spacing-sidebar: 17.5rem;
   --spacing-sidebar-rail: 5.25rem;
-  --spacing-topbar: 6rem;
+  --spacing-topbar: 3.5rem;
   --spacing-topbar-mobile: 4rem;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -337,7 +337,8 @@
     color-scheme: dark;
     -webkit-tap-highlight-color: transparent;
     scroll-behavior: smooth;
-    scroll-padding-top: 6rem;
+    scroll-padding-top: 4.5rem;
+    scroll-behavior: smooth;
     /* Aucun glissement horizontal : la page ne bouge jamais de gauche à droite */
     overflow-x: clip;
     overscroll-behavior-x: none;
@@ -363,10 +364,12 @@
   * {
     scrollbar-color: var(--color-or-dark) var(--color-noir);
   }
-  /* Lenis */
-  html.lenis, html.lenis body { height: auto; }
-  .lenis.lenis-smooth { scroll-behavior: auto !important; }
-  .lenis.lenis-stopped { overflow: hidden; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 /* Écran de chargement : pur CSS, disparaît seul (aucune dépendance au JavaScript) */
@@ -434,24 +437,6 @@
 .name-shine {
   animation: name-shine 1.8s var(--ease-out-expo) 0.9s both;
 }
-html[data-perf="lite"] .skeleton-gold::after {
-  animation: none;
-}
-
-/* Mode allégé : moins d'effets coûteux */
-html[data-perf="lite"] .glass {
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  background-color: rgb(20 20 20 / 0.96);
-}
-html[data-perf="lite"] .lite-hide {
-  display: none !important;
-}
-html[data-perf="lite"] .splash {
-  animation-duration: 0.5s;
-  animation-delay: 0s;
-}
-
 /* ───────── Thème clair ───────── */
 /* Mêmes tokens, surfaces inversées : les utilitaires basculent via les variables. */
 html[data-theme="light"] {
@@ -480,9 +465,6 @@ html[data-theme="light"] {
 /* Surfaces et dégradés qui codent le noir en dur */
 html[data-theme="light"] .glass {
   background-color: rgb(255 255 255 / 0.65);
-}
-html[data-theme="light"][data-perf="lite"] .glass {
-  background-color: rgb(255 255 255 / 0.94);
 }
 html[data-theme="light"] .text-gradient-gold-metal {
   background-image: linear-gradient(

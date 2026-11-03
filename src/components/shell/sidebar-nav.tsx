@@ -19,10 +19,10 @@ import { cn } from "@/lib/utils";
  */
 export function SidebarNav() {
   const pathname = usePathname();
-  const { tier, reducedMotion } = usePerf();
+  const { reducedMotion } = usePerf();
   const asideRef = useRef<HTMLElement>(null);
   const arcsRef = useRef<HTMLDivElement>(null);
-  const lite = tier === "lite" || reducedMotion;
+  const lite = reducedMotion;
 
   const active = activeSidebarIndex(pathname);
   /** Page CTF CHURCH (`/`) : la barre latérale liste les ministères de l'Église. */
@@ -55,14 +55,14 @@ export function SidebarNav() {
           aria-label="CTF CHURCH — Accueil"
           className="relative block aspect-square w-full overflow-hidden rounded-xl border border-or/15 bg-noir shadow-[inset_0_0_40px_rgb(0_0_0/0.55)]"
         >
-          <BrandMedallion size={280} src="/ctf.png" className="size-full object-cover" />
+          <BrandMedallion size={280} src="/ctf-card.png" className="size-full object-contain" />
         </Link>
       </div>
 
       {/* Bande dorée pleine largeur — nom de l'espace (comme la référence) */}
       <div className="bg-gradient-or py-3 text-center">
         <span className="font-nav text-sm font-extrabold tracking-[0.32em] whitespace-nowrap text-noir uppercase md:max-lg:hidden md:max-lg:group-hover/sidebar:inline md:max-lg:group-focus-within/sidebar:inline">
-          CTF CHURCH
+          {isChurchHome ? "Ministères" : "CTF CHURCH"}
         </span>
         <span className="hidden font-nav text-sm font-extrabold tracking-[0.3em] text-noir uppercase md:max-lg:inline md:max-lg:group-hover/sidebar:hidden md:max-lg:group-focus-within/sidebar:hidden">
           CTF
@@ -86,7 +86,7 @@ export function SidebarNav() {
             const Icon = entry.icon;
             const isActive = i === active;
             return (
-              <li key={entry.label} className="relative flex flex-1 shrink-0 items-center">
+              <li key={entry.label} className="relative flex shrink-0 items-center">
                 <Link
                   href={entry.href}
                   aria-current={isActive ? "page" : undefined}
@@ -116,7 +116,7 @@ export function SidebarNav() {
                   />
                   <span
                     className={cn(
-                      "relative font-nav text-[13px] font-normal tracking-normal whitespace-nowrap transition-opacity duration-200",
+                      "relative font-nav text-[13px] font-normal tracking-[0.08em] whitespace-nowrap uppercase transition-opacity duration-200",
                       "md:max-lg:opacity-0 md:group-hover/sidebar:opacity-100 md:group-focus-within/sidebar:opacity-100",
                       isActive ? "font-semibold text-or-light" : "text-blanc/85",
                     )}
@@ -156,7 +156,7 @@ function ChurchEntries({ selected }: { selected: string | null }) {
         const label = (
           <span
             className={cn(
-              "relative font-nav text-[13px] font-normal tracking-normal whitespace-nowrap transition-opacity duration-200 md:max-lg:opacity-0 md:group-hover/sidebar:opacity-100 md:group-focus-within/sidebar:opacity-100",
+              "relative font-nav text-[13px] font-normal tracking-[0.08em] whitespace-nowrap uppercase transition-opacity duration-200 md:max-lg:opacity-0 md:group-hover/sidebar:opacity-100 md:group-focus-within/sidebar:opacity-100",
               deptSelected ? "font-semibold text-or-light" : "text-blanc/85",
             )}
           >
@@ -164,7 +164,7 @@ function ChurchEntries({ selected }: { selected: string | null }) {
           </span>
         );
         return (
-          <li key={entry.label} className={cn("relative flex flex-1 shrink-0", entry.children ? "flex-col justify-center" : "items-center")}>
+          <li key={entry.label} className={cn("relative flex shrink-0", entry.children ? "flex-col" : "items-center")}>
             {entry.children && entry.slug ? (
               <>
                 <Link
@@ -213,7 +213,7 @@ function ChurchEntries({ selected }: { selected: string | null }) {
                               title={child.label}
                               aria-current={childSelected ? "true" : undefined}
                               className={cn(
-                                "flex h-8 w-full items-center gap-2.5 rounded-lg pr-3 pl-9 text-left font-nav text-xs tracking-normal whitespace-nowrap transition-colors hover:bg-or/10",
+                                "flex h-8 w-full items-center gap-2.5 rounded-lg pr-3 pl-9 text-left font-nav text-xs tracking-[0.06em] whitespace-nowrap uppercase transition-colors hover:bg-or/10",
                                 childSelected ? "text-or-light" : "text-blanc/75 hover:text-blanc",
                               )}
                             >

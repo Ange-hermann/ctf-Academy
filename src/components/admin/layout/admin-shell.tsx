@@ -3,49 +3,51 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { LogOut, Menu, PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
+import { LogOut, Menu, X } from "lucide-react";
 import { adminIcons } from "@/components/admin/icons";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { Emblem } from "@/components/brand/logo";
+import { AdminProviders } from "@/components/admin/layout/providers";
+import { StaffBell } from "@/components/admin/layout/staff-bell";
+import { BrandSidebar, BrandSidebarLink, BrandSidebarList } from "@/components/shell/brand-sidebar";
 import { adminRoutes, type AdminNavItem } from "@/config/admin-nav";
+import type { StaffNotification } from "@/lib/admin/queries";
 import { routes } from "@/config/navigation";
 import { signOutAction } from "@/lib/auth/actions";
 import { cn } from "@/lib/utils";
 
-export type AdminShellUser = { name: string; email: string; roleLabels: string[] };
+export type AdminShellUser = { id: string; name: string; email: string; roleLabels: string[] };
 
-function NavList({ items, pathname, collapsed, onNavigate }: { items: AdminNavItem[]; pathname: string; collapsed: boolean; onNavigate?: () => void }) {
+function AdminEntries({ items, pathname, collapsed, onNavigate }: { items: AdminNavItem[]; pathname: string; collapsed: boolean; onNavigate?: () => void }) {
   return (
-    <ul className="space-y-1">
-      {items.map((item) => {
-        const Icon = adminIcons[item.icon];
-        const active = item.href === adminRoutes.dashboard ? pathname === item.href : pathname.startsWith(item.href);
-        return (
-          <li key={item.href}>
-            <Link
-              href={item.href}
-              onClick={onNavigate}
-              aria-current={active ? "page" : undefined}
-              title={collapsed ? item.label : item.description || item.label}
-              className={cn(
-                "group relative flex min-h-11 items-center gap-3 rounded-xl px-3 text-[0.95rem] font-medium transition-colors duration-200",
-                active ? "text-or-light" : "text-blanc/70 hover:bg-or/5 hover:text-blanc",
-                collapsed && "justify-center px-0",
-              )}
-            >
-              {active && <span aria-hidden className="absolute inset-0 rounded-xl border border-or/30 bg-or/10 shadow-gold" />}
-              <Icon aria-hidden className={cn("relative size-5 shrink-0", active ? "text-or-light" : "text-or")} />
-              {!collapsed && <span className="relative truncate">{item.label}</span>}
-            </Link>
-          </li>
-        );
-      })}
-    </ul>
+    <BrandSidebarList>
+      {items.map((item) => (
+        <BrandSidebarLink
+          key={item.href}
+          href={item.href}
+          label={item.label}
+          icon={adminIcons[item.icon]}
+          active={item.href === adminRoutes.dashboard ? pathname === item.href : pathname.startsWith(item.href)}
+          collapsed={collapsed}
+          title={item.description || item.label}
+          onNavigate={onNavigate}
+        />
+      ))}
+    </BrandSidebarList>
   );
 }
 
 /** Cadre de l'espace d'administration : barre latérale filtrée par rôle, barre supérieure, drawer mobile. */
-export function AdminShell({ children, user, items }: { children: React.ReactNode; user: AdminShellUser; items: AdminNavItem[] }) {
+export function AdminShell({
+  children,
+  user,
+  items,
+  notifications,
+}: {
+  children: React.ReactNode;
+  user: AdminShellUser;
+  items: AdminNavItem[];
+  notifications: StaffNotification[];
+}) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [drawer, setDrawer] = useState(false);
@@ -59,39 +61,17 @@ export function AdminShell({ children, user, items }: { children: React.ReactNod
         Aller au contenu
       </a>
 
-      {/* Barre latérale fixe (≥ lg) */}
-      <aside
-        className={cn(
-          "fixed inset-y-0 left-0 z-40 hidden flex-col bg-noir transition-[width] duration-300 ease-out-expo lg:flex",
-          collapsed ? "w-20" : "w-68",
-        )}
+      {/* Barre latérale fixe (≥ lg) — même format que le site principal */}
+      <BrandSidebar
+        homeHref={adminRoutes.dashboard}
+        homeLabel="Administration"
+        ribbon="ADMINISTRATION"
+        navLabel="Navigation d'administration"
+        collapsed={collapsed}
+        onToggle={() => setCollapsed((c) => !c)}
       >
-        <span aria-hidden className="absolute inset-y-0 right-0 w-px bg-linear-to-b from-transparent via-or-light/70 to-transparent shadow-[0_0_14px_1px_rgb(229_193_88/0.4)]" />
-        <div className={cn("flex h-18 items-center gap-3 px-5", collapsed && "justify-center px-0")}>
-          <Link href={adminRoutes.dashboard} aria-label="Administration" className="flex items-center gap-3">
-            <Emblem size={40} className="size-10" />
-            {!collapsed && (
-              <span className="min-w-0">
-                <span className="text-gradient-or-soft font-display block text-base font-semibold tracking-[0.2em]">CTF ACADEMY</span>
-                <span className="block truncate text-xs tracking-wide text-or-light/70 uppercase">Administration</span>
-              </span>
-            )}
-          </Link>
-        </div>
-        <nav aria-label="Navigation d'administration" className="relative z-10 flex-1 overflow-y-auto px-3 pb-4">
-          <NavList items={items} pathname={pathname} collapsed={collapsed} />
-        </nav>
-        <div className="border-t border-line p-3">
-          <button
-            type="button"
-            onClick={() => setCollapsed((c) => !c)}
-            className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl text-blanc/60 transition-colors hover:bg-or/5 hover:text-blanc"
-            aria-label={collapsed ? "Déployer la barre latérale" : "Replier la barre latérale"}
-          >
-            {collapsed ? <PanelLeftOpen aria-hidden className="size-5 text-or" /> : <PanelLeftClose aria-hidden className="size-5 text-or" />}
-          </button>
-        </div>
-      </aside>
+        <AdminEntries items={items} pathname={pathname} collapsed={collapsed} />
+      </BrandSidebar>
 
       {/* Barre supérieure */}
       <header className="sticky top-0 z-30 flex h-18 items-center gap-3 border-b border-line bg-noir/90 px-4 backdrop-blur-md sm:px-6">
@@ -107,6 +87,9 @@ export function AdminShell({ children, user, items }: { children: React.ReactNod
           <p className="truncate text-sm font-semibold text-blanc">{user.name}</p>
           <p className="truncate text-xs text-or-light/80">{user.roleLabels.join(" · ")}</p>
         </div>
+        <AdminProviders>
+          <StaffBell initial={notifications} userId={user.id} />
+        </AdminProviders>
         <ThemeToggle />
         <form action={signOutAction}>
           <button
@@ -126,28 +109,47 @@ export function AdminShell({ children, user, items }: { children: React.ReactNod
         </Link>
       </header>
 
-      {/* Drawer mobile */}
+      {/* Drawer mobile — même rendu que la barre latérale dépliée */}
       {drawer && (
         <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Menu d'administration">
           <button type="button" aria-label="Fermer le menu" className="absolute inset-0 bg-noir/80 backdrop-blur-sm" onClick={() => setDrawer(false)} />
-          <div className="absolute inset-y-0 left-0 flex w-72 flex-col border-r border-or/25 bg-noir p-4">
-            <div className="mb-4 flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <Emblem size={36} className="size-9" />
-                <span className="text-gradient-or-soft font-display text-sm font-semibold tracking-[0.18em]">ADMINISTRATION</span>
-              </span>
-              <button type="button" onClick={() => setDrawer(false)} className="grid size-10 place-items-center rounded-xl border border-line text-blanc/70" aria-label="Fermer">
-                <X aria-hidden className="size-5" />
-              </button>
-            </div>
-            <nav aria-label="Navigation d'administration mobile" className="flex-1 overflow-y-auto">
-              <NavList items={items} pathname={pathname} collapsed={false} onNavigate={() => setDrawer(false)} />
-            </nav>
+          <div className="absolute inset-y-0 left-0 w-[86vw] max-w-sm bg-noir">
+            <BrandSidebar
+              variant="drawer"
+              onClose={() => setDrawer(false)}
+              homeHref={adminRoutes.dashboard}
+              homeLabel="Administration"
+              ribbon="ADMINISTRATION"
+              navLabel="Navigation d'administration mobile"
+              collapsed={false}
+              onToggle={() => setDrawer(false)}
+              footer={
+                <form action={signOutAction} className="relative z-10 border-t border-line p-2">
+                  <button
+                    type="submit"
+                    className="flex h-9 w-full items-center gap-3 rounded-[9px] px-4 font-nav text-xs tracking-[0.08em] text-blanc/60 uppercase transition-colors hover:bg-or/10 hover:text-or-light"
+                  >
+                    <LogOut aria-hidden className="size-4.5 text-or" />
+                    Déconnexion
+                  </button>
+                </form>
+              }
+            >
+              <AdminEntries items={items} pathname={pathname} collapsed={false} onNavigate={() => setDrawer(false)} />
+            </BrandSidebar>
+            <button
+              type="button"
+              onClick={() => setDrawer(false)}
+              className="absolute top-3 right-3 z-20 grid size-10 place-items-center rounded-xl border border-line bg-noir/80 text-blanc/70 backdrop-blur-sm"
+              aria-label="Fermer le menu"
+            >
+              <X aria-hidden className="size-5" />
+            </button>
           </div>
         </div>
       )}
 
-      <div className={cn("transition-[padding] duration-300 ease-out-expo", collapsed ? "lg:pl-20" : "lg:pl-68")}>
+      <div className={cn("transition-[padding] duration-300 ease-out-expo", collapsed ? "lg:pl-sidebar-rail" : "lg:pl-sidebar")}>
         <main id="contenu" className="min-h-dvh px-4 py-8 sm:px-6 lg:px-10">
           {children}
         </main>

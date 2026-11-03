@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { AdminIntro, AdminSection, AdminTable, StatusBadge } from "@/components/admin/ui";
-import { HoursToggle, ReportStatusPicker, StepStatusPicker, VersionStatusPicker } from "@/components/admin/controls";
+import { HoursToggle, InternshipForm, ReportStatusPicker, StepStatusPicker, VersionStatusPicker } from "@/components/admin/controls";
 import { adminRoutes } from "@/config/admin-nav";
 import { requireAdminRoles } from "@/lib/admin/session";
 import { getStageDetail, getStagesOverview, getThesisDetail } from "@/lib/admin/queries";
+import { churchDepartments, EDM_STAGE_PLACE } from "@/lib/internships";
 import { formatShortDate } from "@/lib/student/format";
 
 export default async function StagesPage({ searchParams }: PageProps<"/admin/stages">) {
-  const ctx = await requireAdminRoles(["admin", "supervisor"], adminRoutes.stages);
+  const ctx = await requireAdminRoles(["admin", "supervisor", "pastor"], adminRoutes.stages);
   const sp = await searchParams;
   const stageId = typeof sp.stage === "string" ? sp.stage : null;
   const thesisId = typeof sp.these === "string" ? sp.these : null;
@@ -17,15 +18,24 @@ export default async function StagesPage({ searchParams }: PageProps<"/admin/sta
 
   return (
     <>
-      <AdminIntro title="Stages & mémoires" subtitle="Suivi des stages pratiques, évaluation des rapports et relecture des mémoires (formation des diacres)." />
+      <AdminIntro title="Stages & mémoires" subtitle="Le pasteur crée et attribue les stages : EDS dans les départements de l'Église, EDM à « Vase d'honneur ». Suivi des étapes, heures, rapports et mémoires." />
 
       <div className="space-y-6">
+        <AdminSection title="Créer et attribuer un stage">
+          {data.candidates.length ? (
+            <InternshipForm students={data.candidates} departments={churchDepartments} edmPlace={EDM_STAGE_PLACE} />
+          ) : (
+            <p className="text-sm text-blanc/50">Tous les étudiants admis (EDS, EDM, diacres) ont déjà un stage attribué.</p>
+          )}
+        </AdminSection>
+
         <AdminSection title="Stages en cours">
           {data.stages.length ? (
-            <AdminTable head={["Étudiant", "Lieu · Référent", "Période", "Heures", "Étapes", "Rapport", ""]}>
+            <AdminTable head={["Étudiant", "Formation", "Lieu · Référent", "Période", "Heures", "Étapes", "Rapport", ""]}>
               {data.stages.map((s) => (
                 <tr key={s.id}>
                   <td className="px-2 py-3 text-blanc">{s.studentName}</td>
+                  <td className="px-2 py-3 whitespace-nowrap text-xs uppercase tracking-wide text-or-light">{s.formationSlug ?? "—"}</td>
                   <td className="px-2 py-3 text-blanc/70">
                     {s.place}
                     <span className="block text-xs text-blanc/45">{s.supervisorName}</span>

@@ -3,7 +3,7 @@ import { getLearning, type LessonSummary, type ModuleSummary } from "@/lib/stude
 import { type EnrolledContext, withStudent } from "@/lib/student/session";
 
 export type Chapter = { at: number; label: string };
-export type ResourceItem = { id: string; kind: "pdf" | "link" | "document"; title: string; href: string; sizeBytes: number | null; downloadable: boolean };
+export type ResourceItem = { id: string; kind: "pdf" | "link" | "document" | "audio" | "video"; title: string; href: string; sizeBytes: number | null; downloadable: boolean };
 export type LiveItem = { id: string; title: string; description: string; startsAt: string; endsAt: string; zoomUrl: string | null; replayUrl: string | null; isExample: boolean };
 
 const toResource = (r: { id: string; kind: ResourceItem["kind"]; title: string; url: string | null; storage_path: string | null; size_bytes: number | null }): ResourceItem => ({
@@ -52,7 +52,7 @@ export async function getModuleDetail(ctx: EnrolledContext, moduleSlug: string) 
 
 export type LessonDetail = {
   module: ModuleSummary;
-  lesson: LessonSummary & { content: string; videoUrl: string | null; captionsUrl: string | null; chapters: Chapter[]; isExample: boolean };
+  lesson: LessonSummary & { content: string; videoUrl: string | null; audioUrl: string | null; captionsUrl: string | null; chapters: Chapter[]; isExample: boolean };
   previous: { href: string; title: string } | null;
   next: { href: string; title: string; locked: boolean } | null;
   resources: ResourceItem[];
@@ -89,12 +89,17 @@ export async function getLessonDetail(ctx: EnrolledContext, moduleSlug: string, 
   const prev = sequence[index - 1];
   const next = sequence[index + 1];
 
+  // Vidéo déposée par le formateur : servie via la route protégée (relecture RLS puis URL signée longue).
+  const uploadedVideo = raw.lesson.resources.find((r) => r.kind === "video" && r.storage_path);
+  const audioResource = raw.lesson.resources.find((r) => r.kind === "audio");
+
   return {
     module: mod,
     lesson: {
       ...summary,
       content: raw.lesson.content,
-      videoUrl: raw.lesson.video_url,
+      videoUrl: raw.lesson.video_url ?? (uploadedVideo ? toResource(uploadedVideo).href : null),
+      audioUrl: audioResource ? toResource(audioResource).href : null,
       captionsUrl: raw.lesson.captions_url,
       chapters: Array.isArray(raw.lesson.chapters) ? (raw.lesson.chapters as Chapter[]) : [],
       isExample: raw.lesson.is_example,

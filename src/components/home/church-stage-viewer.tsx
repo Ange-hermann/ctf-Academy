@@ -6,10 +6,10 @@ import { Suspense } from "react";
 import { motion } from "motion/react";
 import { Church, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ChurchReadMore } from "@/components/home/church-text-dialog";
 import { StageFrame, type StageContent } from "@/components/home/stage-frame";
-import { churchPresentation, getChurchPanel } from "@/content/church";
+import { churchHome, getChurchPanel } from "@/content/church";
 import { churchPanelHref } from "@/content/navigation";
-import { churchVision } from "@/content/identity";
 import { usePerf } from "@/hooks/use-perf";
 
 const STAGE_IMAGE = "/couple-k.png";
@@ -19,13 +19,14 @@ const defaultContent: StageContent = {
   ariaLabel: "Présentation de l'Église",
   image: STAGE_IMAGE,
   imageAlt: STAGE_ALT,
-  eyebrow: "Une Église de familles et d'adorateurs",
+  eyebrow: churchHome.eyebrow,
   title: "CTF CHURCH",
-  intro: churchPresentation.intro,
-  quote: churchVision.text,
+  intro: churchHome.welcome[0],
+  quote: churchHome.verse,
   actions: (
     <>
-      <Button asChild size="sm">
+      <ChurchReadMore />
+      <Button asChild variant="outline" size="sm">
         <Link href="/decouvrir/notre-eglise">
           <Church aria-hidden /> Notre Église
         </Link>
@@ -69,12 +70,12 @@ function contentFor(slug: string | null): { key: string; c: StageContent } {
 
 function ChurchStageDynamic() {
   const slug = useSearchParams()?.get("departement") ?? null;
-  const { reducedMotion, tier } = usePerf();
+  const { reducedMotion } = usePerf();
   const { key, c } = contentFor(slug);
   return (
     <motion.div
       key={key}
-      initial={reducedMotion || tier === "lite" ? false : { opacity: 0, y: 10 }}
+      initial={reducedMotion ? false : { opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
     >

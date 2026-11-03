@@ -5,6 +5,7 @@ import { routes } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
 import { getCountry } from "@/content/countries";
 import { clearDemoSession, setDemoSession } from "@/lib/auth/demo";
+import { getDb } from "@/lib/db";
 import { rateLimit, tooManyRequests } from "@/lib/security/rate-limit";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -28,11 +29,10 @@ export async function signInAction(input: unknown): Promise<ActionResult<{ redir
   if (!limit.allowed) return { ok: false, error: tooManyRequests(limit.retryInSec) };
 
   const { email, password, remember, next } = parsed.data;
-  const redirectTo = safeNext(next, routes.studentSpace);
 
   if (!isSupabaseConfigured) {
     await setDemoSession({ email, firstName: email.split("@")[0] }, remember);
-    return { ok: true, data: { redirectTo } };
+    return { ok: true, data: { redirectTo: safeNext(next, routes.studentSpace) } };
   }
 
   const supabase = await createSupabaseServerClient({ persistent: remember });
@@ -45,6 +45,20 @@ export async function signInAction(input: unknown): Promise<ActionResult<{ redir
         ? "Confirmez d'abord votre adresse e-mail grâce au lien reçu, puis reconnectez-vous."
         : "E-mail ou mot de passe incorrect.",
     };
+  }
+
+  // Sans `next` explicite : les comptes d'encadrement arrivent sur /admin,
+  // les étudiants sur leur espace.
+  let redirectTo = safeNext(next, routes.studentSpace);
+  if (!next) {
+    const db = getDb();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user && db) {
+      const userRoles = await db.user_roles.findMany({ where: { user_id: user.id }, select: { role: true } });
+      if (userRoles.some((r) => r.role !== "student")) redirectTo = routes.admin;
+    }
   }
   return { ok: true, data: { redirectTo } };
 }

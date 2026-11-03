@@ -68,7 +68,12 @@ export async function proxy(request: NextRequest) {
     const active = ((rows ?? []) as unknown as EnrollmentRow[]).find(
       (r) => r.admission_status === "admitted" && (r.payment_status === "confirmed" || r.payment_status === "partial"),
     );
-    if (!active) return redirectTo(STUDENT_APPLICATION);
+    if (!active) {
+      // Compte d'encadrement sans admission active : son espace est l'administration, pas le suivi de dossier.
+      const { data: roleRows } = await supabase.from("user_roles").select("role");
+      const staff = (roleRows ?? []).some((r: { role: string }) => r.role !== "student");
+      return redirectTo(staff ? "/admin" : STUDENT_APPLICATION);
+    }
     const formationPath = pathname.match(FORMATION_PATH)?.[1];
     if (formationPath && formationPath !== active.formations?.slug) return redirectTo(STUDENT);
   }

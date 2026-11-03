@@ -57,6 +57,61 @@ export const churchPresentation = {
   ],
 };
 
+export type ChurchHomeSection = {
+  heading: string;
+  paragraphs?: string[];
+  lead?: string;
+  items?: { lead: string; text: string }[];
+};
+
+/** Texte officiel du grand cadre de `/` — présentation du Centre de Transformation des Familles. */
+export const churchHome = {
+  eyebrow: "Bienvenue au Centre de Transformation des Familles",
+  welcome: [
+    "Une Église qui transforme des vies, restaure des familles et équipe une génération pour impacter le monde.",
+    "Au Centre de Transformation des Familles (CTF Church), nous croyons que personne n'est trop loin pour être touché par l'amour de Dieu, qu'aucune vie n'est trop brisée pour être restaurée et qu'aucune destinée n'est trop ordinaire pour devenir extraordinaire entre les mains du Seigneur.",
+    "Nous sommes bien plus qu'une Église : nous sommes une famille spirituelle, un lieu de restauration, de croissance et de transformation, où chacun peut découvrir son identité en Christ, développer son potentiel et accomplir pleinement sa destinée.",
+    "Fondée sur la Parole de Dieu et conduite par le couple pastoral Justin et Aminata Kabasele, CTF Church est une communauté chrétienne dynamique basée à Abidjan, en Côte d'Ivoire, qui place l'adoration, la transformation des vies et l'épanouissement des familles au cœur de sa mission.",
+  ],
+  sections: [
+    {
+      heading: "Notre vision",
+      paragraphs: [
+        "Former une génération de disciples-adorateurs, transformés par la Parole de Dieu, capables de transformer leurs familles, leur environnement et les nations.",
+        "Nous croyons que la véritable transformation d'une société commence par celle des individus et des familles. Lorsqu'une vie est transformée par Jésus-Christ, elle devient une source de lumière, d'espérance et de bénédiction pour toute une génération.",
+      ],
+    },
+    {
+      heading: "Notre mission",
+      lead: "Notre mission repose sur quatre engagements fondamentaux :",
+      items: [
+        { lead: "Adorer Dieu", text: "développer une relation personnelle, profonde et authentique avec le Seigneur." },
+        { lead: "Transformer les vies", text: "accompagner chaque personne vers la guérison intérieure, la restauration et la maturité spirituelle." },
+        { lead: "Restaurer les familles", text: "bâtir des couples solides, des familles épanouies et des générations enracinées dans les valeurs bibliques." },
+        { lead: "Équiper pour impacter", text: "former des disciples et des serviteurs capables d'exercer une influence positive dans l'Église et dans la société." },
+      ],
+    },
+    {
+      heading: "Une Église où chacun a sa place",
+      paragraphs: [
+        "Que vous soyez à la recherche de Dieu, d'une famille spirituelle, d'un nouveau départ ou d'un accompagnement pour grandir dans votre foi, vous avez votre place parmi nous.",
+        "À travers nos cultes, nos temps de prière, nos groupes de communion fraternelle, nos programmes pour les familles et les formations de CTF Academy, nous vous accompagnons dans un parcours de transformation spirituelle, personnelle et familiale.",
+      ],
+    },
+    {
+      heading: "Notre invitation",
+      paragraphs: [
+        "Nous croyons que votre histoire ne s'arrête pas à ce que vous avez vécu jusqu'à aujourd'hui. Avec Dieu, un nouveau chapitre peut commencer.",
+        "Venez tel que vous êtes, mais préparez-vous à ne plus repartir comme vous êtes venu !",
+        "Rejoignez-nous et découvrez une communauté où la foi grandit, où les familles se reconstruisent et où les destinées prennent un nouveau départ.",
+      ],
+    },
+  ] satisfies ChurchHomeSection[],
+  tagline: "Adoration • Transformation • Guérison • Familles • Excellence",
+  verse:
+    "Lève-toi, sois éclairée, car ta lumière arrive, et la gloire de l'Éternel se lève sur toi. — Ésaïe 60:1",
+};
+
 // TODO: lieux et horaires officiels
 export const worship = [
   { day: "Dimanche", name: "Culte d'adoration", time: "Horaire à confirmer", place: "Lieu à confirmer" },

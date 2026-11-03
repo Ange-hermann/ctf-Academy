@@ -3,6 +3,7 @@ import { keyWords, type KeyWordSlug } from "@/content/identity";
 import { getAssessments } from "@/lib/student/queries/assessments";
 import { getEvents } from "@/lib/student/queries/calendar";
 import { getLearning, keyWordScores, percent } from "@/lib/student/queries/learning";
+import { forLevels, getStudentLevels } from "@/lib/student/queries/levels";
 import { unreadMessagesWhere } from "@/lib/student/queries/shell";
 import { type EnrolledContext, withStudent } from "@/lib/student/session";
 
@@ -20,11 +21,15 @@ export async function getDashboard(ctx: EnrolledContext) {
     withStudent(userId, async (tx) => ({
       schedules: await tx.payment_schedules.findMany(),
       validations: await tx.validations.findMany({ orderBy: { decided_at: "desc" } }),
-      announcements: await tx.announcements.findMany({
-        orderBy: [{ pinned: "desc" }, { published_at: "desc" }],
-        take: 2,
-        include: { announcement_reads: { where: { user_id: userId }, select: { user_id: true } } },
-      }),
+      announcements: await (async () => {
+        const { current } = await getStudentLevels(tx);
+        const rows = await tx.announcements.findMany({
+          orderBy: [{ pinned: "desc" }, { published_at: "desc" }],
+          take: 20,
+          include: { announcement_reads: { where: { user_id: userId }, select: { user_id: true } } },
+        });
+        return rows.filter((a) => forLevels(a.level_id, current)).slice(0, 2);
+      })(),
       unreadMessages: await tx.messages.count({ where: unreadMessagesWhere(userId) }),
     })),
   ]);

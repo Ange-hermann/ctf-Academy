@@ -49,7 +49,7 @@ export function StageFrame({ c }: { c: StageContent }) {
             aria-hidden
             className="mt-3.5 block h-px w-36 bg-linear-to-r from-or-light via-or/60 to-transparent shadow-[0_0_8px_rgb(229_193_88/0.5)]"
           />
-          <p className="mt-4 text-[0.95rem] leading-relaxed text-blanc/80">{c.intro}</p>
+          <div className="mt-4 text-[0.95rem] leading-relaxed text-blanc/80">{c.intro}</div>
           {c.quote && (
             <blockquote className="mt-4 border-l-2 border-or/60 pl-4 font-display text-[0.95rem] leading-relaxed text-or-light/90 italic">
               « {c.quote} »

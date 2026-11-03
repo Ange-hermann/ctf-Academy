@@ -3,7 +3,6 @@ import Script from "next/script";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Toaster } from "@/components/ui/toast";
 import { siteConfig } from "@/config/site";
-import { perfScript } from "@/lib/perf-script";
 import { themeScript } from "@/lib/theme-script";
 import "./globals.css";
 
@@ -45,7 +44,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="fr" className="h-full" suppressHydrationWarning>
       <head>
         <Script id="ctf-theme" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: themeScript }} />
-        <Script id="ctf-perf" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: perfScript }} />
       </head>
       <body className="flex min-h-full flex-col">
         <Toaster>{children}</Toaster>

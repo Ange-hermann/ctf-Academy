@@ -39,6 +39,11 @@ export default async function CandidaturesPage({ searchParams }: PageProps<"/adm
         </select>
         <select name="statut" defaultValue={filter.status ?? ""} className={inputClass} aria-label="Statut">
           <option value="">Tous les statuts</option>
+          <optgroup label="Inscription">
+            <option value="draft">Brouillon</option>
+            <option value="submitted">Déposée</option>
+            <option value="complete">Complète</option>
+          </optgroup>
           <optgroup label="Admission">
             <option value="under_review">En examen</option>
             <option value="admitted">Admis</option>

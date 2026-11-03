@@ -6,6 +6,7 @@ import { routes } from "@/config/navigation";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getActiveApplication } from "@/lib/registration/store";
 import { pageMetadata } from "@/lib/seo";
+import { getSiteSettings } from "@/lib/site-settings";
 import { cn } from "@/lib/utils";
 
 /**
@@ -44,7 +45,9 @@ export const metadata = pageMetadata({
 });
 
 export default async function RegisterPage() {
-  const [user, app] = await Promise.all([getCurrentUser(), getActiveApplication()]);
+  const [user, app, settings] = await Promise.all([getCurrentUser(), getActiveApplication(), getSiteSettings()]);
+  // Inscriptions fermées : seule la reprise d'une candidature déjà commencée reste possible.
+  const closed = !settings.registrationsOpen && !app;
 
   return (
     <AuthShell
@@ -78,27 +81,40 @@ export default async function RegisterPage() {
             </p>
             <InscriptionGuide />
           </div>
-          <span className="relative block aspect-square w-1/2 shrink-0 overflow-hidden rounded-xl border border-or/40 shadow-gold-sm sm:aspect-auto sm:self-stretch">
-            <Image src="/dip.jpg" alt="" fill sizes="(min-width: 640px) 30rem, 50vw" className="object-cover" />
+          <span className="relative block aspect-[4/3] w-full shrink-0 overflow-hidden rounded-xl border border-or/40 shadow-gold-sm sm:aspect-auto sm:self-stretch">
+            <Image
+              src="/dip.jpg"
+              alt=""
+              fill
+              sizes="(min-width: 640px) 30rem, 100vw"
+              className="object-cover object-[50%_15%] sm:object-center"
+            />
           </span>
         </div>
       }
       breadcrumb={[{ label: "Inscription", href: routes.register }]}
     >
-      <RegistrationWizard
-        user={user ? { firstName: user.firstName, email: user.email } : null}
-        resume={
-          app
-            ? {
-                reference: app.reference,
-                formation: app.formation,
-                registrationStatus: app.registrationStatus,
-                paymentStatus: app.paymentStatus,
-                admissionStatus: app.admissionStatus,
-              }
-            : null
-        }
-      />
+      {closed ? (
+        <div className="mx-auto max-w-xl rounded-2xl border border-or/30 bg-noir-card p-8 text-center">
+          <h2 className="font-display text-xl font-semibold text-or-light">Inscriptions fermées</h2>
+          <p className="mt-3 text-sm leading-relaxed text-blanc/70">{settings.registrationNotice}</p>
+        </div>
+      ) : (
+        <RegistrationWizard
+          user={user ? { firstName: user.firstName, email: user.email } : null}
+          resume={
+            app
+              ? {
+                  reference: app.reference,
+                  formation: app.formation,
+                  registrationStatus: app.registrationStatus,
+                  paymentStatus: app.paymentStatus,
+                  admissionStatus: app.admissionStatus,
+                }
+              : null
+          }
+        />
+      )}
     </AuthShell>
   );
 }

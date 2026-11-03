@@ -8,7 +8,8 @@ import { routes } from "@/config/navigation";
 import { studentRoutes } from "@/config/student-nav";
 import { churchVision } from "@/content/identity";
 import { signOutAction } from "@/lib/auth/actions";
-import { getStudentContext } from "@/lib/student/session";
+import { getSiteSettings } from "@/lib/site-settings";
+import { getStudentContext, hasStaffRole } from "@/lib/student/session";
 import { whatsappLink } from "@/lib/whatsapp";
 
 export const metadata = { title: "Suivre ma candidature" };
@@ -19,6 +20,9 @@ const date = new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" });
 export default async function StudentApplicationPage() {
   const ctx = await getStudentContext();
   if (!ctx) redirect(`${routes.login}?next=${encodeURIComponent(studentRoutes.application)}`);
+  // Un compte d'encadrement sans admission active appartient à l'administration, pas au suivi de dossier.
+  if (!ctx.enrollment && hasStaffRole(ctx)) redirect(routes.admin);
+  const settings = await getSiteSettings();
 
   return (
     <div className="min-h-dvh bg-aura">
@@ -91,21 +95,23 @@ export default async function StudentApplicationPage() {
           ))
         )}
 
-        <aside className="flex flex-col gap-4 rounded-3xl border border-or/30 bg-or/5 p-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="font-sans text-base font-semibold text-blanc">Une question sur votre dossier ?</h2>
-            <p className="mt-1 text-blanc/70">L&apos;équipe des admissions vous répond sur WhatsApp.</p>
-          </div>
-          <Button asChild variant="outline">
-            <a
-              href={whatsappLink("Bonjour CTF ACADEMY, j'ai une question sur ma candidature.")}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <MessageCircle /> Écrire sur WhatsApp
-            </a>
-          </Button>
-        </aside>
+        {settings.whatsappNumber && (
+          <aside className="flex flex-col gap-4 rounded-3xl border border-or/30 bg-or/5 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="font-sans text-base font-semibold text-blanc">Une question sur votre dossier ?</h2>
+              <p className="mt-1 text-blanc/70">L&apos;équipe des admissions vous répond sur WhatsApp.</p>
+            </div>
+            <Button asChild variant="outline">
+              <a
+                href={whatsappLink(settings.whatsappNumber, "Bonjour CTF ACADEMY, j'ai une question sur ma candidature.")}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <MessageCircle /> Écrire sur WhatsApp
+              </a>
+            </Button>
+          </aside>
+        )}
       </main>
     </div>
   );

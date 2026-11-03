@@ -1,15 +1,16 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { getStudentContext, withStudent, type Tx } from "@/lib/student/session";
-import { signedReadUrl } from "@/lib/student/storage";
+import { MEDIA_URL_TTL, signedReadUrl } from "@/lib/student/storage";
+import { isVoiceAttachment } from "@/lib/messages/voice";
 
-type Lookup = (tx: Tx, id: string) => Promise<{ path: string | null; name: string | null } | null>;
+type Lookup = (tx: Tx, id: string) => Promise<{ path: string | null; name: string | null; media?: boolean } | null>;
 
 /** Chaque type de fichier est d'abord relu SOUS RLS : sans droit sur l'enregistrement, aucune URL n'est émise. */
 const lookups: Record<string, Lookup> = {
   ressource: async (tx, id) => {
     const r = await tx.resources.findUnique({ where: { id } });
-    return r && { path: r.storage_path, name: r.title };
+    return r && { path: r.storage_path, name: r.title, media: r.kind === "audio" || r.kind === "video" };
   },
   memoire: async (tx, id) => {
     const v = await tx.thesis_versions.findUnique({ where: { id } });
@@ -37,7 +38,7 @@ const lookups: Record<string, Lookup> = {
   },
   message: async (tx, id) => {
     const m = await tx.messages.findUnique({ where: { id } });
-    return m && { path: m.attachment_path, name: m.attachment_name };
+    return m && { path: m.attachment_path, name: m.attachment_name, media: isVoiceAttachment(m.attachment_name) };
   },
 };
 
@@ -51,7 +52,7 @@ export async function GET(request: NextRequest) {
 
   const file = await withStudent(ctx.userId, (tx) => lookups[kind](tx, id.data));
   if (!file?.path) return new NextResponse("Fichier introuvable", { status: 404 });
-  const url = await signedReadUrl(file.path, params.has("telecharger") ? (file.name ?? undefined) : undefined);
+  const url = await signedReadUrl(file.path, params.has("telecharger") ? (file.name ?? undefined) : undefined, file.media ? MEDIA_URL_TTL : undefined);
   if (!url) return new NextResponse("Stockage indisponible", { status: 503 });
   return NextResponse.redirect(url, { headers: { "Cache-Control": "private, no-store" } });
 }

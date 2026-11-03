@@ -7,13 +7,13 @@ import { usePerf } from "@/hooks/use-perf";
 /**
  * Vidéo décorative d'un cadre : lecture automatique muette en boucle, mais
  * uniquement tant qu'elle est visible à l'écran (IntersectionObserver) et en
- * préchargeant seulement les métadonnées. Mode allégé, mouvement réduit ou
- * appareil modeste : le poster seul est rendu, la vidéo n'est jamais chargée.
+ * préchargeant seulement les métadonnées. Mouvement réduit : le poster seul
+ * est rendu, la vidéo n'est jamais chargée.
  */
 export function CardVideo({ src, poster, className }: { src: string; poster?: string; className?: string }) {
-  const { ready, tier, reducedMotion } = usePerf();
+  const { ready, reducedMotion } = usePerf();
   const ref = useRef<HTMLVideoElement>(null);
-  const animate = ready && tier === "full" && !reducedMotion;
+  const animate = ready && !reducedMotion;
 
   useEffect(() => {
     if (!animate) return;

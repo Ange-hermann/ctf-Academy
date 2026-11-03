@@ -6,11 +6,15 @@ import { getDb } from "@/lib/db";
 import { rateLimit, tooManyRequests } from "@/lib/security/rate-limit";
 import { audit, requireStudent, withStudent, type EnrolledContext } from "@/lib/student/session";
 import { allowedUploadTypes, inspectUpload, maxUploadBytes, safeFileName, signedUploadUrl, STUDENT_BUCKET } from "@/lib/student/storage";
+import { weeklyReportWindow } from "@/lib/edm";
+import { studentStageHref } from "@/lib/internships";
+import { notifyMany } from "@/lib/notifications/notify";
 import { zodFieldErrors, type ActionResult } from "@/lib/validation/auth";
 
 const STAGE_PATH = "/espace-etudiant/diacres/stage";
 const RAPPORT_PATH = "/espace-etudiant/diacres/rapport";
 const MEMOIRE_PATH = "/espace-etudiant/diacres/memoire";
+const FICHE_PATH = "/espace-etudiant/edm/fiche";
 
 const hoursSchema = z.object({
   workedOn: z.iso.date("Date invalide."),
@@ -41,7 +45,7 @@ export async function logInternshipHoursAction(input: unknown): Promise<ActionRe
   if ("error" in created) return { ok: false, error: "La date doit être comprise dans la période du stage." };
 
   await audit(ctx.userId, "internship_hours.log", "internship_hours", created.id, { hours });
-  revalidatePath(STAGE_PATH);
+  revalidatePath(studentStageHref(ctx.enrollment.formation));
   return { ok: true };
 }
 
@@ -290,4 +294,97 @@ export async function submitReportAction(input: unknown): Promise<ActionResult<{
   revalidatePath(RAPPORT_PATH);
   revalidatePath(STAGE_PATH);
   return { ok: true, data: { version } };
+}
+
+// ───────────────────────── Fiche de transformation EDM ─────────────────────────
+
+const weeklyReportSchema = z.object({
+  prayerDays: z.number().int().min(0, "Entre 0 et 7 jours.").max(7, "Entre 0 et 7 jours."),
+  prayerHours: z.string().trim().min(1, "Indiquez le temps de prière.").max(20, "Valeur trop longue."),
+  mentoreePrayerTime: z.string().trim().min(1, "Indiquez le temps de prière.").max(20, "Valeur trop longue."),
+  methodSimple: z.number().int().min(0).max(60),
+  methodOia: z.number().int().min(0).max(60),
+  methodTheme: z.number().int().min(0).max(60),
+  sermonsCount: z.number().int().min(0).max(60),
+  characterTrait: z.string().trim().min(2, "Indiquez le trait travaillé.").max(200, "Texte trop long."),
+  titheGiven: z.boolean(),
+  soulWon: z.boolean(),
+  soulWonDetail: z.string().trim().max(300, "Texte trop long.").default(""),
+  invited: z.boolean(),
+  invitedDetail: z.string().trim().max(300, "Texte trop long.").default(""),
+  departmentsReport: z.string().trim().min(20, "Dites-en un peu plus (20 caractères minimum).").max(8000, "Texte trop long."),
+  mentoreesReport: z.string().trim().min(20, "Dites-en un peu plus (20 caractères minimum).").max(8000, "Texte trop long."),
+});
+
+/** Fiche de transformation hebdomadaire : une seule par semaine, saisie pendant la fenêtre vendredi 6 h → samedi 23 h 59. */
+export async function submitWeeklyReportAction(input: unknown): Promise<ActionResult> {
+  const parsed = weeklyReportSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "Vérifiez les champs saisis.", fieldErrors: zodFieldErrors(parsed.error) };
+
+  const limit = await rateLimit("weekly-report", { limit: 10, windowMs: 60_000 });
+  if (!limit.allowed) return { ok: false, error: tooManyRequests(limit.retryInSec) };
+
+  const ctx = await requireStudent(FICHE_PATH);
+  if (ctx.enrollment.formation !== "edm") return { ok: false, error: "Cette fiche est réservée aux étudiants de l'École des Mentors." };
+
+  const window = weeklyReportWindow();
+  if (!window.open) return { ok: false, error: "La fiche est fermée : elle s'ouvre le vendredi à 6 h et se ferme le samedi à 23 h 59." };
+
+  const d = parsed.data;
+  const weekStart = new Date(`${window.weekStart}T00:00:00Z`);
+  const data = {
+    prayer_days: d.prayerDays,
+    prayer_hours: d.prayerHours,
+    mentoree_prayer_time: d.mentoreePrayerTime,
+    method_simple: d.methodSimple,
+    method_oia: d.methodOia,
+    method_theme: d.methodTheme,
+    sermons_count: d.sermonsCount,
+    character_trait: d.characterTrait,
+    tithe_given: d.titheGiven,
+    soul_won: d.soulWon,
+    soul_won_detail: d.soulWon ? d.soulWonDetail : "",
+    invited: d.invited,
+    invited_detail: d.invited ? d.invitedDetail : "",
+    departments_report: d.departmentsReport,
+    mentorees_report: d.mentoreesReport,
+    is_example: false,
+    updated_at: new Date(),
+  };
+
+  const saved = await withStudent(ctx.userId, async (tx) => {
+    const existing = await tx.edm_weekly_reports.findUnique({
+      where: { user_id_week_start: { user_id: ctx.userId, week_start: weekStart } },
+      select: { id: true, status: true },
+    });
+    if (existing?.status === "validated") return { error: "validated" as const };
+    if (existing) return { row: await tx.edm_weekly_reports.update({ where: { id: existing.id }, data }), created: false };
+    return { row: await tx.edm_weekly_reports.create({ data: { ...data, user_id: ctx.userId, week_start: weekStart } }), created: true };
+  });
+  if ("error" in saved) return { ok: false, error: "Cette fiche est déjà validée par votre pasteur — elle n'est plus modifiable." };
+
+  // Première soumission de la semaine : l'équipe pastorale est prévenue.
+  if (saved.created) {
+    const db = getDb();
+    if (db) {
+      const staff = await db.user_roles.findMany({ where: { role: { in: ["admin", "pastor"] } }, select: { user_id: true } });
+      const name = `${ctx.firstName} ${ctx.lastName}`.trim() || "Un étudiant";
+      if (staff.length) {
+        await notifyMany(
+          db,
+          staff.map((s) => ({
+            user_id: s.user_id,
+            category: "comment" as const,
+            title: `Fiche de transformation — ${name}`,
+            body: "Nouvelle fiche hebdomadaire EDM à relire.",
+            href: `/admin/edm?etudiant=${ctx.userId}`,
+          })),
+        );
+      }
+    }
+  }
+
+  await audit(ctx.userId, "weekly_report.submit", "edm_weekly_report", saved.row.id, { weekStart: window.weekStart });
+  revalidatePath(FICHE_PATH);
+  return { ok: true };
 }

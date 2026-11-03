@@ -158,6 +158,7 @@ export type ChurchSidebarEntry = {
 export const churchPanelHref = (slug: string) => `/?departement=${slug}`;
 
 export const churchSidebarNav: ChurchSidebarEntry[] = [
+  { label: "CTF ACADEMY", href: routes.academy, icon: GraduationCap },
   {
     label: "Familles",
     slug: "familles",
@@ -216,7 +217,6 @@ export const churchSidebarNav: ChurchSidebarEntry[] = [
       { label: "La Communication", slug: "communication" },
     ],
   },
-  { label: "CTF ACADEMY", href: routes.academy, icon: GraduationCap },
 ];
 
 /**

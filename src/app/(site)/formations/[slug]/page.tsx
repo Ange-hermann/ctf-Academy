@@ -7,11 +7,10 @@ import { PageHero } from "@/components/layout/page-hero";
 import { LevelSteps } from "@/components/sections/level-steps";
 import { JsonLd } from "@/components/seo/json-ld";
 import { ExampleBadge, KeyWordPill, ObjectivePill } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { CheckList } from "@/components/ui/check-list";
 import { GlassCard3D } from "@/components/ui/glass-card-3d";
 import { SectionTitle } from "@/components/ui/section-title";
-import { registerFor, routes } from "@/config/navigation";
+import { registerFor } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
 import { formatAmount, formations, getFormation, journeyLabel, registerLabels, totalFees, type Formation } from "@/content/formations";
 import { getObjective } from "@/content/identity";
@@ -72,11 +71,7 @@ export default async function FormationPage({ params }: PageProps<"/formations/[
         registerHref={f.slug === "eds" ? registerFor(f.slug) : null}
         registerLabel={registerLabels[f.slug]}
         image={heroImages[f.slug]}
-      >
-        <Button asChild size="lg" variant="outline">
-          <Link href={routes.pricing}>Comparer</Link>
-        </Button>
-      </PageHero>
+      />
 
       <section className="px-5 py-16 sm:px-8">
         <dl className="mx-auto grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-3">

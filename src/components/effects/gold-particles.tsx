@@ -7,11 +7,11 @@ import { cn } from "@/lib/utils";
 
 /**
  * Poussière d'or légère (canvas 2D, pas de WebGL) : dérive lente, s'arrête hors écran.
- * Mode allégé : 3× moins de particules. Mouvement réduit : rien n'est rendu.
+ * Mouvement réduit : rien n'est rendu.
  */
 export function GoldParticles({ density = 60, className }: { density?: number; className?: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
-  const { ready, tier, reducedMotion } = usePerf();
+  const { ready, reducedMotion } = usePerf();
 
   useEffect(() => {
     const canvas = ref.current;
@@ -19,7 +19,7 @@ export function GoldParticles({ density = 60, className }: { density?: number; c
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const count = Math.round(tier === "lite" ? density / 3 : density);
+    const count = Math.round(density);
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     let w = 0;
     let h = 0;
@@ -78,7 +78,7 @@ export function GoldParticles({ density = 60, className }: { density?: number; c
       io.disconnect();
       ro.disconnect();
     };
-  }, [ready, tier, reducedMotion, density]);
+  }, [ready, reducedMotion, density]);
 
   return <canvas ref={ref} aria-hidden className={cn("pointer-events-none absolute inset-0 size-full", className)} />;
 }

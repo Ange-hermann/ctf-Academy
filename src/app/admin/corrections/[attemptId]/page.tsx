@@ -6,18 +6,29 @@ import { GradeForm } from "@/components/admin/controls";
 import { adminRoutes } from "@/config/admin-nav";
 import { requireAdminRoles } from "@/lib/admin/session";
 import { getAttemptReview } from "@/lib/admin/queries";
+import { cn } from "@/lib/utils";
 
-const kindLabels: Record<string, string> = { open: "Réponse ouverte", file: "Fichier", choice: "Choix", scale: "Échelle" };
+const kindLabels: Record<string, string> = {
+  single: "Choix unique",
+  multiple: "Choix multiples",
+  true_false: "Vrai ou faux",
+  short: "Réponse courte",
+  long: "Rédaction",
+  file: "Fichier",
+  match: "Association",
+};
 
 const renderValue = (v: unknown): string => {
   if (v === null || v === undefined || v === "") return "—";
   if (typeof v === "string") return v;
+  if (typeof v === "boolean") return v ? "Vrai" : "Faux";
   if (Array.isArray(v)) return v.join(", ");
+  if (typeof v === "object") return JSON.stringify(v);
   return String(v);
 };
 
 export default async function CorrectionDetailPage({ params }: PageProps<"/admin/corrections/[attemptId]">) {
-  const ctx = await requireAdminRoles(["admin", "trainer", "pedagogy"], adminRoutes.corrections);
+  const ctx = await requireAdminRoles(["admin", "trainer", "pedagogy", "pastor"], adminRoutes.corrections);
   const { attemptId } = await params;
   const a = await getAttemptReview(ctx, attemptId);
   if (!a) notFound();
@@ -41,6 +52,12 @@ export default async function CorrectionDetailPage({ params }: PageProps<"/admin
                   <span className="shrink-0 text-xs text-blanc/45">{kindLabels[ans.kind] ?? ans.kind} · {ans.points} pt{ans.points > 1 ? "s" : ""}</span>
                 </div>
                 <p className="mt-2 rounded-lg bg-noir-soft px-3 py-2 text-sm whitespace-pre-line text-blanc/80">{renderValue(ans.value)}</p>
+                {ans.awarded != null && (
+                  <p className={cn("mt-2 text-xs font-medium", ans.isCorrect ? "text-or-light" : "text-blanc/50")}>
+                    Correction automatique : {ans.awarded} / {ans.points} pt{ans.points > 1 ? "s" : ""} — {ans.isCorrect ? "juste" : "faux"}
+                  </p>
+                )}
+                {ans.isCorrect === null && <p className="mt-2 text-xs text-blanc/45">À corriger manuellement</p>}
                 {ans.fileName && <p className="mt-2 text-xs text-or-light">Pièce jointe déposée : {ans.fileName} (accessible via l&rsquo;espace étudiant)</p>}
               </li>
             ))}
@@ -48,7 +65,7 @@ export default async function CorrectionDetailPage({ params }: PageProps<"/admin
         </AdminSection>
 
         <AdminSection title="Notation">
-          <GradeForm attemptId={a.id} maxScore={a.maxScore} />
+          <GradeForm attemptId={a.id} maxScore={a.maxScore} suggestedScore={a.autoScore} />
           <p className="mt-3 text-xs text-blanc/45">La note est publiée dans l&rsquo;espace étudiant avec votre retour, et une notification est envoyée.</p>
         </AdminSection>
       </div>

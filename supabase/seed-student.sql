@@ -7,12 +7,14 @@
 --   diacre.demo@example.com   — étudiante de la formation des diacres (stage et mémoire)
 --   candidat.demo@example.com — candidature en étude (accès limité au suivi)
 --   superviseur.demo@example.com / formateur.demo@example.com — rôles d'encadrement
+--   admin.demo@example.com      — administrateur principal (accès complet à /admin)
 
 -- ───────────────────────── Nettoyage des données d'exemple ─────────────────────────
 delete from auth.users where id in (
   'd0000000-0000-4000-8000-000000000001', 'd0000000-0000-4000-8000-000000000002',
   'd0000000-0000-4000-8000-000000000003', 'd0000000-0000-4000-8000-000000000004',
-  'd0000000-0000-4000-8000-000000000005', 'd0000000-0000-4000-8000-000000000006'
+  'd0000000-0000-4000-8000-000000000005', 'd0000000-0000-4000-8000-000000000006',
+  'd0000000-0000-4000-8000-000000000007'
 );
 delete from public.modules where is_example;
 delete from public.quizzes where is_example;
@@ -144,6 +146,7 @@ select pg_temp.seed_user('d0000000-0000-4000-8000-000000000003', 'diacre.demo@ex
 select pg_temp.seed_user('d0000000-0000-4000-8000-000000000004', 'superviseur.demo@example.com', 'Superviseur', 'Exemple', '+22500000004', 'CI', 'supervisor');
 select pg_temp.seed_user('d0000000-0000-4000-8000-000000000005', 'formateur.demo@example.com', 'Formateur', 'Exemple', '+22500000005', 'CI', 'trainer');
 select pg_temp.seed_user('d0000000-0000-4000-8000-000000000006', 'candidat.demo@example.com', 'Paul', 'Exemple', '+22500000006', 'CI', 'student');
+select pg_temp.seed_user('d0000000-0000-4000-8000-000000000007', 'admin.demo@example.com', 'Admin', 'Exemple', '+22500000007', 'CI', 'admin');
 
 -- ───────────────────────── Niveaux (intitulés : src/content/formations.ts) ─────────────────────────
 insert into public.levels (formation_id, number, title, description) values

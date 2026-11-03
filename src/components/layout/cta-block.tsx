@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Magnetic } from "@/components/ui/magnetic";
 import { routes } from "@/config/navigation";
 import { whatsappLink } from "@/lib/whatsapp";
+import { getSiteSettings } from "@/lib/site-settings";
 
 /** Bloc d'appel à l'action placé en bas de chaque page de contenu. */
-export function CtaBlock({
+export async function CtaBlock({
   title = "Prêt à commencer votre parcours ?",
   text = "L'inscription se fait en 5 étapes, depuis votre téléphone, en quelques minutes.",
   href = routes.register,
@@ -21,6 +22,7 @@ export function CtaBlock({
   /** Affiche le médaillon au-dessus du titre (défaut : oui). */
   emblem?: boolean;
 }) {
+  const settings = await getSiteSettings();
   return (
     <section className="px-5 py-20 sm:px-8 sm:py-28">
       <div className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl border border-or/25 bg-gradient-card px-6 py-14 text-center shadow-gold-lg grain sm:px-12">
@@ -38,11 +40,13 @@ export function CtaBlock({
                 </Link>
               </Button>
             </Magnetic>
-            <Button asChild size="lg" variant="outline">
-              <a href={whatsappLink()} target="_blank" rel="noopener noreferrer">
-                <MessageCircle /> Poser une question
-              </a>
-            </Button>
+            {settings.whatsappNumber && (
+              <Button asChild size="lg" variant="outline">
+                <a href={whatsappLink(settings.whatsappNumber)} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle /> Poser une question
+                </a>
+              </Button>
+            )}
           </div>
         </div>
       </div>

@@ -89,10 +89,15 @@ export const getStudentContext = cache(async (): Promise<StudentContext | null> 
   };
 });
 
+/** Vrai si le compte a un rôle d'encadrement (admin, formateur, pastor…) en plus ou à la place de « student ». */
+export const hasStaffRole = (ctx: Pick<StudentContext, "roles">) => ctx.roles.some((r) => r !== "student");
+
 /** Garde des pages de l'espace : session obligatoire, puis inscription active (sinon « Suivre ma candidature »). */
 export async function requireStudent(from: string = studentRoutes.dashboard): Promise<EnrolledContext> {
   const ctx = await getStudentContext();
   if (!ctx) redirect(`${routes.login}?next=${encodeURIComponent(from)}`);
+  // Un compte d'encadrement sans admission active n'a rien à faire ici : direction l'administration.
+  if (!ctx.enrollment && hasStaffRole(ctx)) redirect(routes.admin);
   if (!ctx.enrollment) redirect(studentRoutes.application);
   return ctx as EnrolledContext;
 }

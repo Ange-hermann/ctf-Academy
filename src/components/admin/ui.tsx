@@ -15,11 +15,14 @@ export function AdminIntro({ title, subtitle }: { title: string; subtitle?: stri
   );
 }
 
-export function StatCard({ label, value, detail, href }: { label: string; value: string | number; detail?: string; href?: string }) {
+export function StatCard({ label, value, detail, href, icon }: { label: string; value: string | number; detail?: string; href?: string; icon?: ReactNode }) {
   const body = (
-    <div className="rounded-2xl border border-or/25 bg-noir-card p-5 shadow-card transition-colors hover:border-or/40">
-      <p className="text-xs font-medium tracking-wide text-blanc/55 uppercase">{label}</p>
-      <p className="font-display mt-2 text-2xl font-bold text-or-light">{value}</p>
+    <div className="h-full rounded-2xl border border-or/25 bg-noir-card p-5 shadow-card transition-colors hover:border-or/50">
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-xs font-medium tracking-wide text-blanc/55 uppercase">{label}</p>
+        {icon && <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-or/30 bg-or/10 text-or-light">{icon}</span>}
+      </div>
+      <p className="font-display mt-2 text-3xl font-bold text-or-light">{value}</p>
       {detail && <p className="mt-1 text-xs text-blanc/50">{detail}</p>}
     </div>
   );
@@ -82,6 +85,11 @@ const statusTones: Record<string, BadgeTone> = {
   accepted: "success",
   done: "success",
   graded: "success",
+  resolved: "success",
+  granted: "success",
+  refused: "danger",
+  active: "success",
+  completed: "neutral",
   waitlisted: "gold",
   in_review: "gold",
   in_progress: "gold",
@@ -114,6 +122,11 @@ const statusLabels: Record<string, string> = {
   done: "Réalisée",
   graded: "Corrigée",
   redo: "À reprendre",
+  resolved: "Résolu",
+  granted: "Accordée",
+  refused: "Refusée",
+  active: "Active",
+  completed: "Clôturée",
 };
 
 /** Étiquette de statut harmonisée (libellé FR + teinte) pour toutes les tables admin. */

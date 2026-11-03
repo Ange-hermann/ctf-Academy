@@ -7,7 +7,6 @@ import { studentRoutes } from "@/config/student-nav";
 import { formatShortDate } from "@/lib/student/format";
 import { getMessagesOverview, ticketStatusLabels } from "@/lib/student/queries/messages";
 import { requireStudent } from "@/lib/student/session";
-import { whatsappLink } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
 
 export const metadata = { title: "Messages et assistance" };
@@ -145,21 +144,30 @@ export default async function MessagesPage() {
               <MessagesSquare aria-hidden className="size-4" /> Besoin d&rsquo;une réponse rapide ?
             </h2>
             <p className="mt-4 text-sm text-blanc/65">
-              Pour les urgences (accès, paiement bloqué, séance en direct), l&rsquo;équipe répond aussi sur WhatsApp pendant les
-              heures ouvrées.
+              Toutes les communications passent par l&rsquo;application : écrivez à votre formateur ou à l&rsquo;administration, par
+              message écrit ou vocal. Vous êtes notifié dès qu&rsquo;on vous répond.
             </p>
           </div>
-          <a
-            href={whatsappLink("Bonjour CTF ACADEMY, j'ai besoin d'aide dans mon espace étudiant.")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(
-              "mt-5 inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-or/40 px-5",
-              "font-semibold text-or-light transition-colors hover:bg-or/10",
-            )}
-          >
-            Écrire sur WhatsApp
-          </a>
+          <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+            <Link
+              href={`${studentRoutes.messages}/formateurs`}
+              className={cn(
+                "inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-or/40 px-5",
+                "font-semibold text-or-light transition-colors hover:bg-or/10",
+              )}
+            >
+              <GraduationCap aria-hidden className="size-4.5" /> Mon formateur
+            </Link>
+            <Link
+              href={`${studentRoutes.messages}/administratif`}
+              className={cn(
+                "inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-line px-5",
+                "font-semibold text-blanc/80 transition-colors hover:border-or/40 hover:text-or-light",
+              )}
+            >
+              <ClipboardList aria-hidden className="size-4.5" /> Administration
+            </Link>
+          </div>
         </div>
       </section>
     </>

@@ -8,7 +8,7 @@ import { formatShortDate } from "@/lib/student/format";
 const kindLabels: Record<string, string> = { quiz: "Quiz", exam: "Examen", exercise: "Exercice" };
 
 export default async function CorrectionsPage() {
-  const ctx = await requireAdminRoles(["admin", "trainer", "pedagogy"], adminRoutes.corrections);
+  const ctx = await requireAdminRoles(["admin", "trainer", "pedagogy", "pastor"], adminRoutes.corrections);
   const rows = await getCorrectionsQueue(ctx);
 
   return (

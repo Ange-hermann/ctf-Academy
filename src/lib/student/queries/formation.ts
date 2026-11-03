@@ -78,6 +78,84 @@ export async function getLeadershipWorks(tx: Tx): Promise<WorkItem[]> {
   return rows.map(toWorkItem("leadership"));
 }
 
+// ───────────────────────── Fiche de transformation EDM ─────────────────────────
+
+export type WeeklyReport = {
+  id: string;
+  weekStart: string;
+  prayerDays: number;
+  prayerHours: string;
+  mentoreePrayerTime: string;
+  methodSimple: number;
+  methodOia: number;
+  methodTheme: number;
+  sermonsCount: number;
+  characterTrait: string;
+  titheGiven: boolean;
+  soulWon: boolean;
+  soulWonDetail: string;
+  invited: boolean;
+  invitedDetail: string;
+  departmentsReport: string;
+  mentoreesReport: string;
+  status: "submitted" | "validated";
+  observation: string | null;
+  validatedAt: string | null;
+  submittedAt: string;
+};
+
+const toWeeklyReport = (r: {
+  id: string;
+  week_start: Date;
+  prayer_days: number;
+  prayer_hours: string;
+  mentoree_prayer_time: string;
+  method_simple: number;
+  method_oia: number;
+  method_theme: number;
+  sermons_count: number;
+  character_trait: string;
+  tithe_given: boolean;
+  soul_won: boolean;
+  soul_won_detail: string;
+  invited: boolean;
+  invited_detail: string;
+  departments_report: string;
+  mentorees_report: string;
+  status: string;
+  observation: string | null;
+  validated_at: Date | null;
+  created_at: Date;
+}): WeeklyReport => ({
+  id: r.id,
+  weekStart: r.week_start.toISOString().slice(0, 10),
+  prayerDays: r.prayer_days,
+  prayerHours: r.prayer_hours,
+  mentoreePrayerTime: r.mentoree_prayer_time,
+  methodSimple: r.method_simple,
+  methodOia: r.method_oia,
+  methodTheme: r.method_theme,
+  sermonsCount: r.sermons_count,
+  characterTrait: r.character_trait,
+  titheGiven: r.tithe_given,
+  soulWon: r.soul_won,
+  soulWonDetail: r.soul_won_detail,
+  invited: r.invited,
+  invitedDetail: r.invited_detail,
+  departmentsReport: r.departments_report,
+  mentoreesReport: r.mentorees_report,
+  status: r.status === "validated" ? "validated" : "submitted",
+  observation: r.observation,
+  validatedAt: r.validated_at?.toISOString() ?? null,
+  submittedAt: r.created_at.toISOString(),
+});
+
+/** Historique des fiches de transformation de l'étudiant (les plus récentes d'abord). */
+export async function getWeeklyReports(tx: Tx): Promise<WeeklyReport[]> {
+  const rows = await tx.edm_weekly_reports.findMany({ orderBy: { week_start: "desc" }, take: 26 });
+  return rows.map(toWeeklyReport);
+}
+
 // ───────────────────────── Reconnaissance du service (EDS) ─────────────────────────
 
 export type ServiceRecord = {

@@ -1,12 +1,13 @@
 "use server";
 
-import { randomUUID } from "node:crypto";
+import { randomBytes, randomUUID } from "node:crypto";
 import { routes } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
 import { getCountry } from "@/content/countries";
 import { currency, formatAmount, getFormation } from "@/content/formations";
 import { getDemoApplication, setDemoApplication, setDemoSession } from "@/lib/auth/demo";
 import { getEmailSender } from "@/lib/notifications/email";
+import { notifyMany, notifyOne } from "@/lib/notifications/notify";
 import { registrationConfirmationEmail } from "@/lib/notifications/templates";
 import { getWhatsAppNotifier } from "@/lib/notifications/whatsapp";
 import { getDb } from "@/lib/db";
@@ -19,6 +20,7 @@ import {
   setApplicationCookie,
 } from "@/lib/registration/store";
 import { rateLimit, tooManyRequests } from "@/lib/security/rate-limit";
+import { getSiteSettings } from "@/lib/site-settings";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createSupabaseAdminClient, createSupabaseServerClient } from "@/lib/supabase/server";
 import type { AdmissionStatus, PaymentStatus, RegistrationStatus } from "@/lib/supabase/types";
@@ -41,6 +43,10 @@ const CONFIG_ERROR: ActionResult<never> = {
 export async function submitApplicationAction(input: unknown): Promise<ActionResult<Statuses>> {
   const slug = formationSlugSchema.safeParse((input as { formation?: unknown } | null)?.formation);
   if (!slug.success) return { ok: false, error: "Choisissez une formation." };
+
+  // Inscriptions fermées depuis /admin/parametres : aucune nouvelle candidature (le brouillon reste possible).
+  const settings = await getSiteSettings();
+  if (!settings.registrationsOpen) return { ok: false, error: settings.registrationNotice };
 
   const supabase = isSupabaseConfigured ? await createSupabaseServerClient() : null;
   const sessionUser = supabase ? (await supabase.auth.getUser()).data.user : null;
@@ -152,6 +158,30 @@ export async function submitApplicationAction(input: unknown): Promise<ActionRes
     await admin!.from("application_access_tokens").insert({ application_id: appId, token_hash: hashToken(token) });
   }
   await setApplicationCookie(appId, token);
+
+  // L'équipe des admissions est prévenue de la nouvelle candidature (sans bloquer l'inscription).
+  try {
+    if (db && userId) {
+      const [student, staff] = await Promise.all([
+        db.profiles.findUnique({ where: { id: userId }, select: { first_name: true, last_name: true, email: true } }),
+        db.user_roles.findMany({ where: { role: { in: ["admin", "admissions"] } }, select: { user_id: true } }),
+      ]);
+      const name = `${student?.first_name ?? ""} ${student?.last_name ?? ""}`.trim() || student?.email || reference;
+      const formationName = getFormation(slug.data)?.name ?? slug.data.toUpperCase();
+      await notifyMany(
+        db,
+        staff.map((s) => ({
+          user_id: s.user_id,
+          category: "validation" as const,
+          title: "Nouvelle candidature",
+          body: `${name} — ${formationName} (${reference})`,
+          href: `/admin/candidatures/${appId}`,
+        })),
+      );
+    }
+  } catch {
+    // La notification de l'équipe ne doit jamais faire échouer l'inscription.
+  }
   return { ok: true, data: base };
 }
 
@@ -322,6 +352,37 @@ export async function checkPaymentAction(): Promise<ActionResult<Statuses>> {
       where: { id: app.id },
       data: { payment_status: status, registration_status: registrationStatus, completed_at: status === "confirmed" ? now : null },
     });
+    // Reçu officiel + notifications (étudiant et équipe) quand le prestataire confirme.
+    if (status === "confirmed" && app.userId) {
+      try {
+        const paid = await db.payments.findFirst({ where: { provider_reference: payment.reference, status: "confirmed" }, select: { id: true } });
+        if (paid) {
+          const number = `RCT-${now.getFullYear()}-${randomBytes(3).toString("hex").toUpperCase()}`;
+          await db.receipts.upsert({ where: { payment_id: paid.id }, create: { payment_id: paid.id, user_id: app.userId, number }, update: {} });
+        }
+        await notifyOne(
+          db,
+          app.userId,
+          "payment",
+          "Paiement confirmé",
+          `Votre règlement pour la candidature ${app.reference} est confirmé — votre reçu est disponible.`,
+          "/espace-etudiant/paiements",
+        );
+        const staff = await db.user_roles.findMany({ where: { role: { in: ["admin", "admissions", "finance"] } }, select: { user_id: true } });
+        await notifyMany(
+          db,
+          staff.map((s) => ({
+            user_id: s.user_id,
+            category: "payment" as const,
+            title: "Paiement confirmé",
+            body: `Règlement confirmé automatiquement sur ${app.reference} — le dossier peut avancer.`,
+            href: `/admin/candidatures/${app.id}`,
+          })),
+        );
+      } catch {
+        // La confirmation reste acquise même si le reçu ou la notification échoue.
+      }
+    }
   } else if (!admin) {
     const demo = await getDemoApplication();
     if (demo?.payment) {
