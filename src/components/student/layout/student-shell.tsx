@@ -6,6 +6,7 @@ import { GoldCursor } from "@/components/effects/gold-cursor";
 import { BottomNav } from "@/components/student/layout/bottom-nav";
 import { CommandPalette } from "@/components/student/layout/command-palette";
 import { OfflineBanner } from "@/components/student/layout/offline-banner";
+import { InstallBanner } from "@/components/pwa/install-banner";
 import { ShellDataProvider, type ShellData } from "@/components/student/layout/shell-data";
 import { SidebarNav } from "@/components/student/layout/sidebar-nav";
 import { Topbar, type ShellUser } from "@/components/student/layout/topbar";
@@ -141,6 +142,7 @@ export function StudentShell({ children, user, formation, shell, initialCollapse
           ]}
         />
         {!inLesson && <GoldCursor />}
+        <InstallBanner />
       </div>
     </ShellDataProvider>
   );

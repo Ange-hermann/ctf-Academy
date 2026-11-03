@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { LogOut, Menu, X } from "lucide-react";
+import { Home, LogOut, Menu, X } from "lucide-react";
 import { adminIcons } from "@/components/admin/icons";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { AdminProviders } from "@/components/admin/layout/providers";
 import { StaffBell } from "@/components/admin/layout/staff-bell";
+import { InstallBanner } from "@/components/pwa/install-banner";
 import { BrandSidebar, BrandSidebarLink, BrandSidebarList } from "@/components/shell/brand-sidebar";
 import { adminRoutes, type AdminNavItem } from "@/config/admin-nav";
 import type { StaffNotification } from "@/lib/admin/queries";
@@ -93,6 +94,14 @@ export function AdminShell({
           <StaffBell initial={notifications} userId={user.id} />
         </AdminProviders>
         <ThemeToggle />
+        <Link
+          href={routes.home}
+          className="grid size-11 place-items-center rounded-xl border border-line text-or transition-colors hover:bg-or/10 hover:text-or-light sm:hidden"
+          aria-label="Retourner au site"
+          title="Voir le site"
+        >
+          <Home aria-hidden className="size-5" />
+        </Link>
         <form action={signOutAction}>
           <button
             type="submit"
@@ -126,15 +135,25 @@ export function AdminShell({
               collapsed={false}
               onToggle={() => setDrawer(false)}
               footer={
-                <form action={signOutAction} className="relative z-10 border-t border-line p-2">
-                  <button
-                    type="submit"
+                <div className="relative z-10 border-t border-line p-2">
+                  <Link
+                    href={routes.home}
+                    onClick={() => setDrawer(false)}
                     className="flex h-9 w-full items-center gap-3 rounded-[9px] px-4 font-nav text-xs tracking-[0.08em] text-blanc/60 uppercase transition-colors hover:bg-or/10 hover:text-or-light"
                   >
-                    <LogOut aria-hidden className="size-4.5 text-or" />
-                    Déconnexion
-                  </button>
-                </form>
+                    <Home aria-hidden className="size-4.5 text-or" />
+                    Voir le site
+                  </Link>
+                  <form action={signOutAction}>
+                    <button
+                      type="submit"
+                      className="flex h-9 w-full items-center gap-3 rounded-[9px] px-4 font-nav text-xs tracking-[0.08em] text-blanc/60 uppercase transition-colors hover:bg-or/10 hover:text-or-light"
+                    >
+                      <LogOut aria-hidden className="size-4.5 text-or" />
+                      Déconnexion
+                    </button>
+                  </form>
+                </div>
               }
             >
               <AdminEntries items={items} pathname={pathname} collapsed={false} onNavigate={() => setDrawer(false)} />
@@ -156,6 +175,7 @@ export function AdminShell({
           {children}
         </main>
       </div>
+      <InstallBanner />
     </div>
   );
 }

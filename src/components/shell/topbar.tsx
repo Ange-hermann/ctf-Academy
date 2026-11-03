@@ -184,7 +184,7 @@ export function TopBar() {
               type="button"
               aria-label="Rechercher (Ctrl+K)"
               onClick={() => setSearchOpen(true)}
-              className="grid size-11 place-items-center rounded-xl text-or transition-colors hover:bg-or/10 hover:text-or-light"
+              className="ml-4 grid size-11 place-items-center rounded-xl text-or transition-colors hover:bg-or/10 hover:text-or-light lg:ml-0"
             >
               <Search aria-hidden className="size-[22px]" />
             </button>

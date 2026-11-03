@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: siteConfig.name,
     description: siteConfig.description,
     lang: "fr",
-    start_url: "/",
+    start_url: "/espace-etudiant",
     scope: "/",
     display: "standalone",
     orientation: "portrait",
