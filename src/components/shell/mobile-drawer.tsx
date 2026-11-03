@@ -4,19 +4,17 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowRight, ChevronDown, X } from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 import { BrandMedallion } from "@/components/shell/brand-medallion";
 import { GoldArcs } from "@/components/shell/gold-arcs";
-import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { activeSidebarIndex, churchPanelHref, churchSidebarNav, mainNav, mediaNav, publicSidebarNav, routes } from "@/content/navigation";
 import { useScrollLock } from "@/hooks/use-scroll-lock";
-import { useSignedIn } from "@/hooks/use-signed-in";
 import { cn } from "@/lib/utils";
 
 /**
  * Tiroir mobile (<768 px) : glisse depuis la gauche, reprend le médaillon et les
- * 7 entrées de la barre latérale, puis les rubriques en accordéon et S'inscrire.
+ * 7 entrées de la barre latérale, puis les rubriques en accordéon.
  */
 export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const pathname = usePathname();
@@ -24,7 +22,6 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
     () => mainNav.find((s) => pathname.startsWith(s.href))?.label ?? null,
   );
   const closeRef = useRef<HTMLButtonElement>(null);
-  const signedIn = useSignedIn();
   const active = activeSidebarIndex(pathname);
   /** Page CTF CHURCH (`/`) : le menu liste les ministères de l'Église. */
   const isChurchHome = pathname === "/";
@@ -59,31 +56,33 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
             exit={{ x: "-100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 32 }}
             onClick={(e) => e.stopPropagation()}
-            className="relative flex h-full w-[86vw] max-w-sm flex-col overflow-hidden border-r border-or/30 bg-noir shadow-[20px_0_60px_rgb(0_0_0/0.6)]"
+            className="relative flex h-full w-[86vw] max-w-sm flex-col overflow-hidden border-r border-or/30 bg-noir pl-[env(safe-area-inset-left)] shadow-[20px_0_60px_rgb(0_0_0/0.6)]"
           >
             <span aria-hidden className="absolute inset-y-0 right-0 w-px bg-linear-to-b from-or/70 via-or/35 to-or/10" />
             <div className="relative">
               {/* Carte logo carrée — même format que la barre latérale dépliée */}
-              <div className="px-5 pt-6 pb-5">
+              <div className="px-5 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-5">
                 <Link
                   href="/"
                   onClick={onClose}
                   aria-label="CTF CHURCH — Accueil"
-                  className="relative block aspect-square w-full overflow-hidden rounded-xl border border-or/15 bg-noir shadow-[inset_0_0_40px_rgb(0_0_0/0.55)]"
+                  className="relative mx-auto block aspect-square w-44 overflow-hidden rounded-xl border border-or/15 bg-noir shadow-[inset_0_0_40px_rgb(0_0_0/0.55)]"
                 >
                   <BrandMedallion size={280} src="/ctf-card.png" className="size-full object-contain" />
                 </Link>
               </div>
               {/* Bande dorée pleine largeur */}
               <div className="bg-gradient-or py-3 text-center">
-                <span className="font-nav text-sm font-extrabold tracking-[0.32em] whitespace-nowrap text-noir uppercase">CTF Church</span>
+                <span className="font-nav text-sm font-extrabold tracking-[0.32em] whitespace-nowrap text-noir uppercase">
+                  {isChurchHome ? "Ministères" : "CTF CHURCH"}
+                </span>
               </div>
               <button
                 ref={closeRef}
                 type="button"
                 aria-label="Fermer le menu"
                 onClick={onClose}
-                className="absolute top-3 right-3 z-20 grid size-10 place-items-center rounded-xl border border-line bg-noir/80 text-or backdrop-blur-sm hover:bg-or/10"
+                className="absolute top-[max(0.75rem,env(safe-area-inset-top))] right-[max(0.75rem,env(safe-area-inset-right))] z-20 grid size-10 place-items-center rounded-xl border border-line bg-noir/80 text-or backdrop-blur-sm hover:bg-or/10"
               >
                 <X aria-hidden className="size-5" />
               </button>
@@ -179,12 +178,7 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
             </div>
 
             <div className="relative px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-3">
-              <Button asChild size="lg" className="relative z-10 w-full" halo>
-                <Link href={signedIn ? routes.studentSpace : routes.register} onClick={onClose}>
-                  {signedIn ? "Mon espace" : "S'inscrire"} <ArrowRight />
-                </Link>
-              </Button>
-              <div className="relative z-10 mt-3 flex items-center justify-center">
+              <div className="relative z-10 flex items-center justify-center">
                 <ThemeToggle />
               </div>
               <GoldArcs animated={false} className="absolute inset-x-0 bottom-0 -z-0 h-28 opacity-60" />

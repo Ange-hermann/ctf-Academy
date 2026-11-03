@@ -128,7 +128,7 @@ function BellLoader() {
 export function Topbar({ user, formationAcronym }: { user: ShellUser; formationAcronym: string }) {
   const setPalette = useStudentUi((s) => s.setPalette);
   return (
-    <header className="sticky top-0 z-30 bg-noir/85 backdrop-blur-md">
+    <header className="sticky top-0 z-30 bg-noir/85 pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] backdrop-blur-md">
       {/* Ligne dorée lumineuse en bas de barre (signature du shell) */}
       <span
         aria-hidden

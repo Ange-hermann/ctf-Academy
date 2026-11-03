@@ -53,7 +53,7 @@ export function SidebarNav() {
         <Link
           href="/"
           aria-label="CTF CHURCH — Accueil"
-          className="relative block aspect-square w-full overflow-hidden rounded-xl border border-or/15 bg-noir shadow-[inset_0_0_40px_rgb(0_0_0/0.55)]"
+          className="relative mx-auto block aspect-square w-full overflow-hidden rounded-xl border border-or/15 bg-noir shadow-[inset_0_0_40px_rgb(0_0_0/0.55)] lg:w-44 md:max-lg:group-hover/sidebar:w-44 md:max-lg:group-focus-within/sidebar:w-44"
         >
           <BrandMedallion size={280} src="/ctf-card.png" className="size-full object-contain" />
         </Link>

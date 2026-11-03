@@ -93,12 +93,12 @@ export function TopBar() {
     <>
       <header
         className={cn(
-          "sticky top-0 z-40 h-topbar-mobile transition-[background-color,backdrop-filter] duration-500 lg:h-topbar",
+          "sticky top-0 z-40 h-[calc(4rem+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)] transition-[background-color,backdrop-filter] duration-500 lg:h-[calc(3.5rem+env(safe-area-inset-top))]",
           scrolled || openSection ? "bg-noir/90 backdrop-blur-md supports-[backdrop-filter]:bg-noir/80" : "bg-noir",
         )}
         onPointerLeave={scheduleClose}
       >
-        <div className="relative mx-auto flex h-full max-w-[1600px] items-center justify-between px-4 lg:px-7">
+        <div className="relative mx-auto flex h-full max-w-[1600px] items-center justify-between pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] lg:pl-[max(1.75rem,env(safe-area-inset-left))] lg:pr-[max(1.75rem,env(safe-area-inset-right))]">
           {/* ——— Mobile / tablette : hamburger, médaillon centré, actions ——— */}
           <button
             type="button"
@@ -184,11 +184,11 @@ export function TopBar() {
               type="button"
               aria-label="Rechercher (Ctrl+K)"
               onClick={() => setSearchOpen(true)}
-              className="ml-4 grid size-11 place-items-center rounded-xl text-or transition-colors hover:bg-or/10 hover:text-or-light lg:ml-0"
+              className="grid size-10 place-items-center rounded-xl text-or transition-colors hover:bg-or/10 hover:text-or-light lg:size-11"
             >
               <Search aria-hidden className="size-[22px]" />
             </button>
-            <ThemeToggle iconClassName="size-[22px]" />
+            <ThemeToggle className="size-10 lg:size-11" iconClassName="size-[22px]" />
             <Divider className="hidden self-center lg:block" />
             <button
               type="button"
@@ -203,7 +203,7 @@ export function TopBar() {
               <Link
                 href={signedIn ? routes.studentSpace : routes.register}
                 aria-label={signedIn ? "Mon espace" : "S'inscrire"}
-                className="ml-1 grid size-10 place-items-center rounded-xl bg-gradient-or font-nav text-base font-extrabold text-noir shadow-gold"
+                className="grid size-10 place-items-center rounded-xl bg-gradient-or font-nav text-base font-extrabold text-noir shadow-gold"
               >
                 S
               </Link>

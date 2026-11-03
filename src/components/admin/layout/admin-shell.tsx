@@ -59,7 +59,7 @@ export function AdminShell({
     <div className="min-h-dvh bg-noir">
       <a
         href="#contenu"
-        className="fixed top-3 left-3 z-[400] -translate-y-24 rounded-xl bg-gradient-or px-4 py-3 font-semibold text-noir focus:translate-y-0"
+        className="fixed top-[max(0.75rem,env(safe-area-inset-top))] left-[max(0.75rem,env(safe-area-inset-left))] z-[400] -translate-y-24 rounded-xl bg-gradient-or px-4 py-3 font-semibold text-noir focus:translate-y-0"
       >
         Aller au contenu
       </a>
@@ -77,7 +77,7 @@ export function AdminShell({
       </BrandSidebar>
 
       {/* Barre supérieure */}
-      <header className="sticky top-0 z-30 flex h-18 items-center gap-3 border-b border-line bg-noir/90 px-4 backdrop-blur-md sm:px-6">
+      <header className="sticky top-0 z-30 flex h-[calc(4.5rem+env(safe-area-inset-top))] items-center gap-3 border-b border-line bg-noir/90 pt-[env(safe-area-inset-top)] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] backdrop-blur-md sm:pl-[max(1.5rem,env(safe-area-inset-left))] sm:pr-[max(1.5rem,env(safe-area-inset-right))]">
         <button
           type="button"
           className="grid size-11 place-items-center rounded-xl border border-line text-or transition-colors hover:bg-or/10 lg:hidden"
@@ -136,14 +136,6 @@ export function AdminShell({
               onToggle={() => setDrawer(false)}
               footer={
                 <div className="relative z-10 border-t border-line p-2">
-                  <Link
-                    href={routes.home}
-                    onClick={() => setDrawer(false)}
-                    className="flex h-9 w-full items-center gap-3 rounded-[9px] px-4 font-nav text-xs tracking-[0.08em] text-blanc/60 uppercase transition-colors hover:bg-or/10 hover:text-or-light"
-                  >
-                    <Home aria-hidden className="size-4.5 text-or" />
-                    Voir le site
-                  </Link>
                   <form action={signOutAction}>
                     <button
                       type="submit"
@@ -161,7 +153,7 @@ export function AdminShell({
             <button
               type="button"
               onClick={() => setDrawer(false)}
-              className="absolute top-3 right-3 z-20 grid size-10 place-items-center rounded-xl border border-line bg-noir/80 text-blanc/70 backdrop-blur-sm"
+              className="absolute top-[max(0.75rem,env(safe-area-inset-top))] right-[max(0.75rem,env(safe-area-inset-right))] z-20 grid size-10 place-items-center rounded-xl border border-line bg-noir/80 text-blanc/70 backdrop-blur-sm"
               aria-label="Fermer le menu"
             >
               <X aria-hidden className="size-5" />

@@ -90,7 +90,7 @@ export function StudentShell({ children, user, formation, shell, initialCollapse
       <div className="min-h-dvh bg-noir">
         <a
           href="#contenu"
-          className="fixed top-3 left-3 z-[400] -translate-y-24 rounded-xl bg-gradient-or px-4 py-3 font-semibold text-noir focus:translate-y-0"
+          className="fixed top-[max(0.75rem,env(safe-area-inset-top))] left-[max(0.75rem,env(safe-area-inset-left))] z-[400] -translate-y-24 rounded-xl bg-gradient-or px-4 py-3 font-semibold text-noir focus:translate-y-0"
         >
           Aller au contenu
         </a>

@@ -47,7 +47,7 @@ export function BrandSidebar({
     <aside
       className={cn(
         drawer
-          ? "relative flex h-full w-full flex-col overflow-hidden bg-noir"
+          ? "relative flex h-full w-full flex-col overflow-hidden bg-noir pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)]"
           : "fixed inset-y-0 left-0 z-40 hidden flex-col overflow-hidden bg-noir transition-[width] duration-300 ease-out-expo lg:flex",
         !drawer && (collapsed ? "w-sidebar-rail" : "w-sidebar"),
       )}
@@ -64,7 +64,10 @@ export function BrandSidebar({
           href={homeHref}
           aria-label={homeLabel}
           onClick={drawer ? onClose : undefined}
-          className="relative block aspect-square w-full overflow-hidden rounded-xl border border-or/15 bg-noir shadow-[inset_0_0_40px_rgb(0_0_0/0.55)]"
+          className={cn(
+            "relative block aspect-square overflow-hidden rounded-xl border border-or/15 bg-noir shadow-[inset_0_0_40px_rgb(0_0_0/0.55)]",
+            folded ? "w-full" : "mx-auto w-44",
+          )}
         >
           <BrandMedallion size={280} src="/ctf-card.png" className="size-full object-contain" />
         </Link>

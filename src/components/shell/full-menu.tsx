@@ -79,7 +79,7 @@ export function FullMenu({ open, onClose }: { open: boolean; onClose: () => void
             data-lenis-prevent
             className="relative flex h-full flex-col overflow-y-auto"
           >
-            <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-8 pt-8">
+            <div className="mx-auto flex w-full max-w-6xl items-center justify-between pl-[max(2rem,env(safe-area-inset-left))] pr-[max(2rem,env(safe-area-inset-right))] pt-[calc(2rem+env(safe-area-inset-top))]">
               <BrandMedallion size={76} />
               <button
                 ref={closeRef}
